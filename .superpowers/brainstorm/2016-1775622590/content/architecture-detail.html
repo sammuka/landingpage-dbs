@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBS — Arquitetura Detalhada</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #060c18;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  padding: 32px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Typography ── */
+.page-eyebrow { font-family:'Courier New',monospace; font-size:9px; color:#0078d4; letter-spacing:4px; text-transform:uppercase; margin-bottom:6px; }
+.page-title { font-family:Georgia,serif; font-size:30px; font-weight:800; color:#f1f5f9; line-height:1.15; margin-bottom:8px; }
+.page-sub { font-size:13px; color:#64748b; line-height:1.7; max-width:680px; }
+.section-label {
+  font-family:'Courier New',monospace; font-size:8px; color:#1e3a5f;
+  letter-spacing:3px; text-transform:uppercase;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  padding-bottom:8px; margin-bottom:20px;
+}
+h2 { font-family:Georgia,serif; font-size:19px; font-weight:700; color:#f1f5f9; margin-bottom:4px; }
+h3 { font-size:12px; font-weight:700; color:#e2e8f0; margin-bottom:4px; }
+
+/* ── Layout Helpers ── */
+.page-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:36px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.logos { display:flex; gap:16px; align-items:center; }
+.logo-img { height:26px; object-fit:contain; opacity:0.8; }
+.logo-sep { width:1px; height:22px; background:rgba(255,255,255,0.1); }
+.section { margin-bottom:48px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+/* ── Arch Box ── */
+.arch-box {
+  border-radius:10px; padding:20px;
+  position:relative; overflow:hidden;
+}
+.arch-legacy {
+  background: linear-gradient(145deg, rgba(216,59,1,0.08) 0%, rgba(0,0,0,0) 60%);
+  border:1px solid rgba(216,59,1,0.22);
+}
+.arch-cloud {
+  background: linear-gradient(145deg, rgba(0,120,212,0.1) 0%, rgba(16,124,16,0.05) 80%);
+  border:1px solid rgba(0,120,212,0.28);
+}
+.arch-label {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'Courier New',monospace; font-size:8px; font-weight:700;
+  padding:3px 10px; border-radius:2px; letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:14px;
+}
+.arch-label.legacy { background:rgba(216,59,1,0.15); color:#fca5a5; border:1px solid rgba(216,59,1,0.3); }
+.arch-label.cloud { background:rgba(0,120,212,0.15); color:#93c5fd; border:1px solid rgba(0,120,212,0.3); }
+.arch-label.implemented { background:rgba(16,124,16,0.18); color:#4ade80; border:1px solid rgba(16,124,16,0.4); margin-left:6px; }
+
+/* ── Node / Icon Component ── */
+.node-grid { display:flex; flex-wrap:wrap; gap:10px; }
+.node {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:7px; padding:10px 12px; min-width:88px; max-width:110px;
+  text-align:center; cursor:default; transition:all 0.15s;
+  position:relative;
+}
+.node:hover { background:rgba(255,255,255,0.06); border-color:rgba(0,120,212,0.5); transform:translateY(-2px); }
+.node img { width:36px; height:36px; object-fit:contain; }
+.node-name { font-size:9px; font-weight:600; color:#e2e8f0; line-height:1.3; }
+.node-sub { font-size:8px; color:#475569; line-height:1.3; }
+.node.danger { border-color:rgba(216,59,1,0.35); background:rgba(216,59,1,0.05); }
+.node.danger .node-name { color:#fca5a5; }
+.node.primary { border-color:rgba(0,120,212,0.4); background:rgba(0,120,212,0.07); }
+.node.success { border-color:rgba(16,124,16,0.35); background:rgba(16,124,16,0.06); }
+.node.success .node-name { color:#86efac; }
+.node.amber { border-color:rgba(245,158,11,0.35); background:rgba(245,158,11,0.06); }
+.node.amber .node-name { color:#fde68a; }
+.node-badge {
+  position:absolute; top:-6px; right:-6px;
+  background:#d83b01; color:white; font-size:7px; font-weight:700;
+  padding:1px 4px; border-radius:3px; font-family:'Courier New',monospace;
+}
+.node-badge.green { background:#107c10; }
+.node-badge.amber { background:#d97706; color:#000; }
+
+/* ── Monolith visual (legacy) ── */
+.monolith-container {
+  border:2px dashed rgba(216,59,1,0.25); border-radius:8px; padding:14px;
+  margin-bottom:12px; background:rgba(216,59,1,0.03);
+  position:relative;
+}
+.monolith-title {
+  position:absolute; top:-10px; left:12px;
+  background:#060c18; padding:0 8px;
+  font-family:'Courier New',monospace; font-size:8px; color:#d83b01; letter-spacing:2px;
+}
+
+/* ── Azure environment container ── */
+.azure-env {
+  border:1.5px dashed rgba(0,120,212,0.3); border-radius:8px; padding:14px;
+  margin-bottom:12px; background:rgba(0,120,212,0.02);
+  position:relative;
+}
+.azure-env-title {
+  position:absolute; top:-10px; left:12px;
+  background:#060c18; padding:0 10px;
+  font-family:'Courier New',monospace; font-size:8px;
+  color:#0078d4; letter-spacing:2px;
+  display:flex; align-items:center; gap:5px;
+}
+
+/* ── Sub groups ── */
+.sub-group {
+  border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:10px;
+  margin-bottom:10px; background:rgba(0,0,0,0.15);
+  position:relative;
+}
+.sub-group-title {
+  font-size:8px; color:#334155; font-family:'Courier New',monospace;
+  letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;
+}
+
+/* ── Arrow / connection ── */
+.arrow-row { display:flex; align-items:center; gap:4px; margin:6px 0; font-size:10px; }
+.arrow { color:#1e3a5f; }
+.arrow.blue { color:#0078d4; }
+.arrow.green { color:#107c10; }
+.arrow.red { color:#d83b01; }
+.conn-label { font-size:8px; font-family:'Courier New',monospace; color:#334155; }
+
+/* ── Security badge ── */
+.sec-issue {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(216,59,1,0.1); border:1px solid rgba(216,59,1,0.3);
+  color:#fca5a5; font-size:8px; padding:2px 7px; border-radius:3px;
+  margin:2px;
+}
+.sec-fix {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(16,124,16,0.1); border:1px solid rgba(16,124,16,0.3);
+  color:#86efac; font-size:8px; padding:2px 7px; border-radius:3px;
+  margin:2px;
+}
+
+/* ── DevOps Pipeline ── */
+.pipeline {
+  background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px; padding:20px; overflow-x:auto;
+}
+.pipeline-stages {
+  display:flex; align-items:stretch; gap:0; min-width:900px;
+}
+.pipeline-stage {
+  flex:1; display:flex; flex-direction:column;
+  border-right:1px solid rgba(255,255,255,0.05);
+  padding:0 12px;
+  position:relative;
+}
+.pipeline-stage:last-child { border-right:none; }
+.stage-header {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05);
+  margin-bottom:10px;
+}
+.stage-icon { width:32px; height:32px; object-fit:contain; }
+.stage-name { font-size:9px; font-weight:700; color:#f1f5f9; text-align:center; letter-spacing:0.5px; }
+.stage-connector {
+  position:absolute; right:-1px; top:50%; transform:translateY(-50%);
+  width:20px; height:20px; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; color:#0078d4;
+}
+.stage-steps { list-style:none; }
+.stage-steps li {
+  font-size:8px; color:#64748b; padding:2px 0;
+  display:flex; align-items:flex-start; gap:4px; line-height:1.4;
+}
+.stage-steps li::before { content:'›'; color:#0078d4; font-weight:700; flex-shrink:0; }
+.stage-badge {
+  display:inline-block; font-size:7px; font-family:'Courier New',monospace;
+  padding:1px 5px; border-radius:2px; margin-top:4px; font-weight:700;
+}
+.badge-trigger { background:rgba(245,158,11,0.2); color:#fde68a; border:1px solid rgba(245,158,11,0.3); }
+.badge-auto { background:rgba(0,120,212,0.2); color:#93c5fd; border:1px solid rgba(0,120,212,0.3); }
+.badge-gate { background:rgba(16,124,16,0.2); color:#86efac; border:1px solid rgba(16,124,16,0.3); }
+.badge-oidc { background:rgba(139,92,246,0.2); color:#c4b5fd; border:1px solid rgba(139,92,246,0.3); }
+
+/* ── Replica badge ── */
+.replica-tag {
+  font-size:7px; font-family:'Courier New',monospace;
+  background:rgba(0,120,212,0.1); border:1px solid rgba(0,120,212,0.2);
+  color:#60a5fa; padding:1px 5px; border-radius:2px; margin-top:3px;
+  display:inline-block;
+}
+
+/* ── IaC section ── */
+.iac-box {
+  background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.2);
+  border-radius:8px; padding:16px; margin-bottom:16px;
+}
+.iac-title { font-family:'Courier New',monospace; font-size:9px; color:#a78bfa; letter-spacing:3px; margin-bottom:10px; }
+.iac-files { display:flex; flex-wrap:wrap; gap:6px; }
+.iac-file {
+  background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.2);
+  border-radius:4px; padding:5px 10px; font-family:'Courier New',monospace;
+  font-size:9px; color:#c4b5fd;
+}
+
+/* ── Full-width diagram canvas ── */
+.diagram-canvas {
+  background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.04);
+  border-radius:10px; padding:24px;
+}
+
+/* scrollable note */
+.scroll-hint { text-align:center; font-size:9px; color:#1e3a5f; font-family:'Courier New',monospace; letter-spacing:2px; margin-bottom:20px; }
+
+/* Separator */
+.v-sep { width:1px; background:rgba(255,255,255,0.05); margin:0 8px; }
+.h-sep { height:1px; background:rgba(255,255,255,0.05); margin:12px 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Assurant Brasil · DBS · Arquitetura de Sistema</div>
+    <h1 class="page-title">Mapas Arquiteturais Detalhados<br/>AS-IS → TO-BE</h1>
+    <p class="page-sub">Diagrama interativo de ambas as arquiteturas — legado Java EE / JBoss e nova solução cloud-native em .NET 9 / Azure Container Apps — com esteira DevOps completa e IaC Bicep.</p>
+  </div>
+  <div class="logos">
+    <img src="logo-sistran.png" alt="Sistran" class="logo-img" style="filter:brightness(0) invert(1);">
+    <div class="logo-sep"></div>
+    <img src="logo-lumina-branca.png" alt="Lumina AI" class="logo-img">
+  </div>
+</div>
+
+<div class="scroll-hint">▼ &nbsp; SCROLL PARA VER A ARQUITETURA COMPLETA &nbsp; ▼</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 1 — LEGACY ARCHITECTURE (AS-IS)   -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">01 — Arquitetura Legada · AS-IS · JBoss EAP 7.4</div>
+
+  <div class="arch-box arch-legacy">
+    <span class="arch-label legacy">⚠ Monolito Java EE · JBoss EAP 7.4</span>
+
+    <div class="diagram-canvas">
+
+      <!-- External Partners row -->
+      <div class="sub-group" style="margin-bottom:16px;">
+        <div class="sub-group-title">Parceiros externos — inbound SOAP</div>
+        <div class="node-grid">
+          <div class="node danger">
+            <div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.15);border-radius:6px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fca5a5" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6V4m0 16v-2"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <span class="node-name">Assurant<br/>Systems</span>
+            <span class="node-sub">SOAP / WS-Security</span>
+            <div class="node-badge">CVE</div>
+          </div>
+          <div class="node danger">
+            <div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.15);border-radius:6px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fca5a5" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6V4m0 16v-2"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <span class="node-name">Marisa /<br/>Parceiros</span>
+            <span class="node-sub">SOAP / WSDL</span>
+            <div class="node-badge">CVE</div>
+          </div>
+          <div style="display:flex;align-items:center;color:#d83b01;font-size:20px;padding:0 8px;">→</div>
+          <div class="node danger">
+            <div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.2);border-radius:6px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f87171" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zm0 10L2 7m10 10l10-5"/></svg>
+            </div>
+            <span class="node-name">dbs-ws</span>
+            <span class="node-sub">CXF 2.7.17 (2014!)<br/>/dbs · 7 @WebMethod</span>
+            <div class="node-badge">EOL</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="sec-issue">🔒 WS-Security keystore senha hardcoded "changeit"</span>
+          <span class="sec-issue">🔒 WS-Security sem assinatura (só encript.)</span>
+          <span class="sec-issue">🔒 CXF 2.7.17 CVEs não corrigidas</span>
+        </div>
+      </div>
+
+      <!-- JBoss monolith -->
+      <div class="monolith-container">
+        <div class="monolith-title">JBOSS EAP 7.4 — MONOLITO (7 módulos fortemente acoplados via JNDI)</div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:8px;">
+
+          <!-- dbs-lib -->
+          <div class="node danger" style="max-width:100%; flex-direction:row; align-items:flex-start; gap:8px; padding:10px;">
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.12);border-radius:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f87171" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>
+            </div>
+            <div>
+              <div class="node-name">dbs-lib</div>
+              <div class="node-sub">28 entidades JPA, interfaces @Remote, enums, utilitários — tudo misturado</div>
+              <div class="node-badge" style="position:static;display:inline-block;margin-top:3px;">RAIZ</div>
+            </div>
+          </div>
+
+          <!-- BillingServiceBean -->
+          <div class="node danger" style="max-width:100%; flex-direction:row; align-items:flex-start; gap:8px; padding:10px; grid-column:span 2;">
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.12);border-radius:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f87171" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+            </div>
+            <div>
+              <div class="node-name">dbs — BillingServiceBean</div>
+              <div class="node-sub">EJB 3.1 Stateless · Bean Managed Transactions (BMT manual) · <strong style="color:#f87171;">4.700+ linhas em uma única classe</strong> · ~300 stubs SOAP Braspag (JAX-WS gerados por wsimport)</div>
+              <div style="margin-top:4px;">
+                <span class="sec-issue">BMT begin/commit/rollback manual</span>
+                <span class="sec-issue">0 testes unitários</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- dbsdb -->
+          <div class="node danger" style="max-width:100%; flex-direction:row; align-items:flex-start; gap:8px; padding:10px;">
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.12);border-radius:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f87171" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+            </div>
+            <div>
+              <div class="node-name">dbsdb</div>
+              <div class="node-sub">Padrão DLO proprietário<br/>27 pares DAO+DLO<br/>54 EJB Stateless beans</div>
+            </div>
+          </div>
+
+          <!-- dbstimer -->
+          <div class="node amber" style="max-width:100%; flex-direction:row; align-items:flex-start; gap:8px; padding:10px;">
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,0.12);border-radius:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fde68a" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <div>
+              <div class="node-name">dbstimer</div>
+              <div class="node-sub">8 EJB Timer @Schedule<br/>Host-parity hack (par/ímpar)<br/>persistent=false → perde em restart</div>
+            </div>
+          </div>
+
+          <!-- dbsportal -->
+          <div class="node danger" style="max-width:100%; flex-direction:row; align-items:flex-start; gap:8px; padding:10px;">
+            <div style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(216,59,1,0.12);border-radius:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f87171" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <div>
+              <div class="node-name">dbsportal</div>
+              <div class="node-sub">Struts 1.3 (EOL 2013)<br/>44 JSPs · jQuery UI 1.8<br/>60+ actions</div>
+              <div class="node-badge" style="position:static;display:inline-block;margin-top:3px;">EOL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security issues inside monolith -->
+        <div class="h-sep"></div>
+        <div class="sub-group-title" style="margin-bottom:6px;">9 Vulnerabilidades CRÍTICAS dentro do monolito</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          <span class="sec-issue">AES IV=zeros (ECB)</span>
+          <span class="sec-issue">JWT secret hardcoded</span>
+          <span class="sec-issue">MD5 sem salt</span>
+          <span class="sec-issue">PAN/CVV em toString()</span>
+          <span class="sec-issue">Token "AssurantBrasil"</span>
+          <span class="sec-issue">Keystore no banco</span>
+          <span class="sec-issue">AES/ECB cookies</span>
+          <span class="sec-issue">WS-Security "changeit"</span>
+          <span class="sec-issue">Credenciais em DB</span>
+        </div>
+      </div>
+
+      <!-- Oracle -->
+      <div class="node-grid" style="margin-top:10px; justify-content:center;">
+        <div style="display:flex;align-items:center;justify-content:center;width:100%;color:#334155;font-size:11px;margin:6px 0;">↕ JPA 2.0 / DataSource JNDI / Oracle Dialect</div>
+        <div class="node amber" style="min-width:140px;">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#fde68a" stroke-width="1.2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+          <span class="node-name">Oracle 19c/21c</span>
+          <span class="node-sub">schema AIZ_DBS<br/>27 tabelas · 26 seq<br/>4 procedures · 1 func</span>
+        </div>
+      </div>
+
+      <!-- External integrations -->
+      <div class="sub-group" style="margin-top:16px;">
+        <div class="sub-group-title">Integrações externas — outbound SOAP</div>
+        <div class="node-grid">
+          <div class="node danger">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="1.2"><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+            <span class="node-name">PagadorTransaction</span>
+            <span class="node-sub">SOAP/WSDL<br/>*.pagador.com.br<br/>DESCONTINUADO</span>
+            <div class="node-badge">~100 stubs</div>
+          </div>
+          <div class="node danger">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="1.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span class="node-name">PagadorQuery</span>
+            <span class="node-sub">SOAP/WSDL<br/>*.pagador.com.br</span>
+            <div class="node-badge">~50 stubs</div>
+          </div>
+          <div class="node danger">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="1.2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="node-name">CartãoProtegido</span>
+            <span class="node-sub">SOAP/WSDL<br/>cartaoprotegido<br/>.braspag.com.br</span>
+            <div class="node-badge">~100 stubs</div>
+          </div>
+          <div class="node danger">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="1.2"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+            <span class="node-name">ReconciliationFiles</span>
+            <span class="node-sub">SOAP/WSDL<br/>reconciliation<br/>.braspag.com.br</span>
+            <div class="node-badge">~50 stubs</div>
+          </div>
+          <div class="node amber">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#fde68a" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span class="node-name">ACSEL / ELITA</span>
+            <span class="node-sub">File export<br/>120-char posicional<br/>CSV pipe-delimited</span>
+          </div>
+          <div class="node danger">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="node-name">SCA</span>
+            <span class="node-sub">SOAP Auth<br/>Portal SSO<br/>sem OAuth2</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /diagram-canvas -->
+  </div><!-- /arch-box legacy -->
+</div><!-- /section 1 -->
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION 2 — NEW CLOUD ARCHITECTURE (TO-BE)         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">02 — Arquitetura Cloud-Native · TO-BE · Azure Container Apps · .NET 9</div>
+
+  <div class="arch-box arch-cloud">
+    <span class="arch-label cloud">Azure Container Apps · .NET 9 · Next.js 16</span>
+    <span class="arch-label implemented">✓ Implementado · 191 testes</span>
+
+    <div class="diagram-canvas">
+
+      <!-- ROW 1: External callers -->
+      <div class="sub-group">
+        <div class="sub-group-title">Clientes externos</div>
+        <div class="node-grid">
+          <div class="node amber">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#fde68a" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zm0 10L2 7m10 10l10-5"/></svg>
+            <span class="node-name">Parceiros Legados</span>
+            <span class="node-sub">SOAP / WS-Security<br/>compatibilidade mantida</span>
+          </div>
+          <div class="node primary">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#93c5fd" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="node-name">Portal Next.js</span>
+            <span class="node-sub">Admin + Pagamento<br/>Okta SSO</span>
+          </div>
+          <div class="node primary">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#93c5fd" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="node-name">Novos Sistemas</span>
+            <span class="node-sub">REST / JSON<br/>Bearer JWT RS256</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;margin:8px 0;gap:20px;">
+        <div style="flex:1;height:1px;background:rgba(245,158,11,0.2);"></div>
+        <span style="font-size:9px;color:#475569;font-family:'Courier New',monospace;">↓ SOAP (:8080) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ HTTPS / REST (:443)</span>
+        <div style="flex:1;height:1px;background:rgba(0,120,212,0.2);"></div>
+      </div>
+
+      <!-- AZURE CONTAINER APPS ENVIRONMENT -->
+      <div class="azure-env">
+        <div class="azure-env-title">
+          <img src="icons/Container-Instances.svg" width="14" height="14" style="filter:brightness(2);">
+          AZURE CONTAINER APPS ENVIRONMENT &nbsp;·&nbsp; rg-dbs-prod
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-top:8px;">
+
+          <!-- SOAP Adapter -->
+          <div class="sub-group" style="background:rgba(245,158,11,0.04); border-color:rgba(245,158,11,0.15);">
+            <div class="sub-group-title" style="color:#d97706;">SOAP ADAPTER</div>
+            <div class="node amber" style="max-width:100%;width:100%;align-items:flex-start;gap:6px;flex-direction:row;">
+              <img src="icons/App-Services.svg" width="28" height="28" style="flex-shrink:0;">
+              <div>
+                <div class="node-name">CoreWCF</div>
+                <div class="node-sub">Container isolado<br/>0.5 vCPU · 256Mi</div>
+                <div class="replica-tag">min:2 max:4</div>
+              </div>
+            </div>
+            <div style="font-size:8px;color:#475569;margin-top:8px;">• Preserva WSDL original<br/>• WS-Security via Key Vault<br/>• Sunset planejado +12m<br/>• Delega para Application Layer</div>
+            <div style="margin-top:6px;">
+              <span class="sec-fix">✓ Senha no Key Vault</span>
+            </div>
+          </div>
+
+          <!-- Payment API -->
+          <div class="sub-group" style="background:rgba(0,120,212,0.04); border-color:rgba(0,120,212,0.15);">
+            <div class="sub-group-title" style="color:#0078d4;">PAYMENT API</div>
+            <div class="node primary" style="max-width:100%;width:100%;align-items:flex-start;gap:6px;flex-direction:row;">
+              <img src="icons/App-Services.svg" width="28" height="28" style="flex-shrink:0;">
+              <div>
+                <div class="node-name">ASP.NET Core<br/>.NET 9</div>
+                <div class="node-sub">1 vCPU · 2Gi</div>
+                <div class="replica-tag">min:1 max:5 (KEDA)</div>
+              </div>
+            </div>
+            <div style="font-size:8px;color:#475569;margin-top:8px;">• 6 controllers REST<br/>• Clean Architecture (5 camadas)<br/>• MediatR + FluentValidation<br/>• 8 Quartz.NET jobs<br/>• EF Core 9 + Polly v8</div>
+          </div>
+
+          <!-- Admin API -->
+          <div class="sub-group" style="background:rgba(0,120,212,0.03); border-color:rgba(0,120,212,0.12);">
+            <div class="sub-group-title" style="color:#0078d4;">ADMIN API</div>
+            <div class="node primary" style="max-width:100%;width:100%;align-items:flex-start;gap:6px;flex-direction:row;">
+              <img src="icons/App-Services.svg" width="28" height="28" style="flex-shrink:0;">
+              <div>
+                <div class="node-name">ASP.NET Core<br/>.NET 9</div>
+                <div class="node-sub">0.5 vCPU · 1Gi</div>
+                <div class="replica-tag">min:1 max:3</div>
+              </div>
+            </div>
+            <div style="font-size:8px;color:#475569;margin-top:8px;">• 8 controllers admin<br/>• CRUD 13 entidades<br/>• ACSEL + ELITA export<br/>• Relatórios + Auditoria<br/>• Rate limiting 500/min</div>
+          </div>
+
+          <!-- Web / Portal -->
+          <div class="sub-group" style="background:rgba(16,124,16,0.03); border-color:rgba(16,124,16,0.12);">
+            <div class="sub-group-title" style="color:#107c10;">PORTAL WEB</div>
+            <div class="node success" style="max-width:100%;width:100%;align-items:flex-start;gap:6px;flex-direction:row;">
+              <img src="icons/App-Services.svg" width="28" height="28" style="filter:hue-rotate(100deg);flex-shrink:0;">
+              <div>
+                <div class="node-name">Next.js 16<br/>App Router</div>
+                <div class="node-sub">0.5 vCPU · 1Gi</div>
+                <div class="replica-tag">min:1 max:10 sticky</div>
+              </div>
+            </div>
+            <div style="font-size:8px;color:#475569;margin-top:8px;">• Tailwind CSS v4<br/>• shadcn/ui + Radix<br/>• TanStack Query v5<br/>• Okta React SDK<br/>• 45 telas funcionais</div>
+          </div>
+
+        </div>
+
+        <!-- Quartz Jobs detail -->
+        <div class="sub-group" style="margin-top:10px; background:rgba(0,120,212,0.03);">
+          <div class="sub-group-title">8 Quartz.NET Jobs (dentro do Payment API container)</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">RecurrenceJob</div>
+              <div style="color:#475569;">Cobrança mensal recorrente</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">RetryJob</div>
+              <div style="color:#475569;">Reprocessa falhas</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">PendingCaptureJob</div>
+              <div style="color:#475569;">Captura antes da expiração</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">ReconciliationJob</div>
+              <div style="color:#475569;">Sync status Braspag</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">ExpirationJob</div>
+              <div style="color:#475569;">Expira autorizações</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">WebhookRetryJob</div>
+              <div style="color:#475569;">Reprocessa webhooks</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">BusinessConfigRefreshJob</div>
+              <div style="color:#475569;">Cache config a cada 5min</div>
+            </div>
+            <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.15);border-radius:4px;padding:5px 10px;font-size:8px;color:#93c5fd;">
+              <div style="font-weight:700;">AuditCleanupJob</div>
+              <div style="color:#475569;">Archiva logs audit semanalmente</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /azure-env containers -->
+
+      <!-- Supporting Azure Services -->
+      <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:16px;">
+
+        <div class="node success">
+          <img src="icons/Key-Vaults.svg" width="36" height="36">
+          <span class="node-name">Key Vault</span>
+          <span class="node-sub">Todos os secrets<br/>MerchantKey · JWT<br/>Zero em código</span>
+          <div class="node-badge green">PCI</div>
+        </div>
+
+        <div class="node primary">
+          <img src="icons/SQL-Database.svg" width="36" height="36">
+          <span class="node-name">Azure SQL</span>
+          <span class="node-sub">Standard Tier<br/>EF Core 9<br/>Managed Identity</span>
+          <div class="node-badge green">MID</div>
+        </div>
+
+        <div class="node primary">
+          <img src="icons/Container-Registries.svg" width="36" height="36">
+          <span class="node-name">Container Registry</span>
+          <span class="node-sub">newdbs.azurecr.io<br/>Vuln. scan ativo<br/>Semantic version</span>
+        </div>
+
+        <div class="node primary">
+          <img src="icons/Application-Insights.svg" width="36" height="36">
+          <span class="node-name">App Insights</span>
+          <span class="node-sub">Traces + Metrics<br/>Correlation ID<br/>Alertas automáticos</span>
+        </div>
+
+        <div class="node primary">
+          <img src="icons/Monitor.svg" width="36" height="36">
+          <span class="node-name">Azure Monitor</span>
+          <span class="node-sub">Log Analytics<br/>Dashboards<br/>Anomaly alerts</span>
+        </div>
+
+        <div class="node primary">
+          <img src="icons/Identity-Governance.svg" width="36" height="36">
+          <span class="node-name">Managed Identity</span>
+          <span class="node-sub">User-Assigned<br/>Key Vault + ACR<br/>SQL sem senha</span>
+          <div class="node-badge green">Zero pwd</div>
+        </div>
+
+      </div>
+
+      <!-- External services row -->
+      <div class="h-sep"></div>
+      <div class="sub-group">
+        <div class="sub-group-title">Integrações externas — modernizadas</div>
+        <div class="node-grid">
+          <div class="node success">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#86efac" stroke-width="1.5"><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+            <span class="node-name">Braspag REST</span>
+            <span class="node-sub">*.braspag.com.br<br/>POST /v2/sales<br/>Polly v8 retry+CB</span>
+            <div class="node-badge green">REST</div>
+          </div>
+          <div class="node primary">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#93c5fd" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <span class="node-name">Okta OIDC</span>
+            <span class="node-sub">OAuth2 / PKCE<br/>JWT RS256<br/>MFA habilitado</span>
+            <div class="node-badge green">SSO</div>
+          </div>
+          <div class="node primary">
+            <img src="icons/Storage-Accounts.svg" width="32" height="32">
+            <span class="node-name">Azure Storage</span>
+            <span class="node-sub">Blob exports<br/>ACSEL · ELITA<br/>Arquivos gerados</span>
+          </div>
+          <div class="node success">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#86efac" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="node-name">ACSEL / ELITA</span>
+            <span class="node-sub">Formato preservado<br/>120-char posicional<br/>CSV pipe</span>
+            <div class="node-badge green">Compat.</div>
+          </div>
+        </div>
+
+        <!-- Security fixes -->
+        <div style="margin-top:8px;">
+          <span class="sec-fix">✓ AES-GCM random IV via Key Vault</span>
+          <span class="sec-fix">✓ JWT RS256 via Okta (sem secret em código)</span>
+          <span class="sec-fix">✓ BCrypt cost 12</span>
+          <span class="sec-fix">✓ PAN nunca persiste (SAQ A-EP)</span>
+          <span class="sec-fix">✓ Rate limiting 4 políticas</span>
+          <span class="sec-fix">✓ CSP + HSTS + CORS allowlist</span>
+        </div>
+      </div>
+
+    </div><!-- /diagram-canvas -->
+  </div><!-- /arch-box cloud -->
+</div><!-- /section 2 -->
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 3 — DEVOPS PIPELINE + IaC + GIT CIRCUIT       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">03 — Esteira DevOps · IaC Bicep · GitHub Actions · Git no Circuito</div>
+
+  <!-- IaC Box -->
+  <div class="iac-box" style="margin-bottom:20px;">
+    <div class="iac-title">// BICEP IaC — Toda infra é código, versionada no Git</div>
+    <div class="iac-files">
+      <div class="iac-file">infra/main.bicep</div>
+      <div class="iac-file">managed-identity.bicep</div>
+      <div class="iac-file">container-apps-env.bicep</div>
+      <div class="iac-file">container-registry.bicep</div>
+      <div class="iac-file">sql-server.bicep</div>
+      <div class="iac-file">key-vault.bicep</div>
+      <div class="iac-file">payment-api.bicep</div>
+      <div class="iac-file">admin-api.bicep</div>
+      <div class="iac-file">web.bicep</div>
+      <div class="iac-file">soap-adapter.bicep</div>
+      <div class="iac-file">infra/parameters/prod.bicepparam</div>
+      <div class="iac-file">infra/parameters/staging.bicepparam</div>
+    </div>
+    <div style="margin-top:10px;font-size:9px;color:#64748b;">
+      <span style="color:#a78bfa;">$</span> az deployment group create --resource-group rg-dbs-prod --template-file infra/main.bicep --parameters @infra/parameters/prod.bicepparam
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div class="page-eyebrow" style="margin-bottom:2px;">GitHub Actions CI/CD</div>
+        <div style="font-size:11px;color:#64748b;">Trigger: push → branch strategy: feature/* → PR → develop (staging) → main (prod gate)</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="stage-badge badge-oidc">OIDC Federated — sem service principal armazenado</span>
+        <span class="stage-badge badge-gate">Approval Gate → prod</span>
+      </div>
+    </div>
+
+    <div class="pipeline-stages">
+
+      <!-- Stage 0: Developer + Git -->
+      <div class="pipeline-stage" style="flex:0.8;">
+        <div class="stage-header">
+          <img src="icons/devops-git-client.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Developer<br/>+ Git</span>
+        </div>
+        <ul class="stage-steps">
+          <li>git commit + push</li>
+          <li>branch feature/*</li>
+          <li>Pull Request → develop</li>
+          <li>Code Review obrigatório</li>
+          <li>Conventional Commits</li>
+        </ul>
+        <span class="stage-badge badge-trigger">TRIGGER</span>
+        <div class="stage-connector">→</div>
+      </div>
+
+      <!-- Stage 1: Build -->
+      <div class="pipeline-stage">
+        <div class="stage-header">
+          <img src="icons/github-icon-white.svg" class="stage-icon" style="width:28px;height:28px;filter:brightness(2);">
+          <span class="stage-name">GitHub<br/>Actions Build</span>
+        </div>
+        <ul class="stage-steps">
+          <li>dotnet restore</li>
+          <li>dotnet build --no-restore</li>
+          <li>npm ci (portal)</li>
+          <li>npm run build</li>
+          <li>Lint + type-check</li>
+          <li>SAST (CodeQL)</li>
+        </ul>
+        <span class="stage-badge badge-auto">AUTO</span>
+        <div class="stage-connector">→</div>
+      </div>
+
+      <!-- Stage 2: Test -->
+      <div class="pipeline-stage">
+        <div class="stage-header">
+          <img src="icons/devops-test.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Testes +<br/>Coverage</span>
+        </div>
+        <ul class="stage-steps">
+          <li>dotnet test (191 testes)</li>
+          <li>xUnit + Moq + FluentAssert</li>
+          <li>Testcontainers SQL Server</li>
+          <li>Coverage gate ≥ 80%</li>
+          <li>OWASP dependency-check</li>
+          <li>Secret scanner (gitleaks)</li>
+        </ul>
+        <span class="stage-badge badge-auto">AUTO · GATE</span>
+        <div class="stage-connector">→</div>
+      </div>
+
+      <!-- Stage 3: Docker + ACR -->
+      <div class="pipeline-stage">
+        <div class="stage-header">
+          <img src="icons/docker.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Docker Build<br/>→ ACR Push</span>
+        </div>
+        <ul class="stage-steps">
+          <li>docker build (multi-stage)</li>
+          <li>Tag: SHA + semver</li>
+          <li>az acr login (OIDC)</li>
+          <li>docker push newdbs.azurecr.io</li>
+          <li>ACR vuln. scan automático</li>
+          <li>4 imagens paralelas</li>
+        </ul>
+        <span class="stage-badge badge-oidc">OIDC — sem token</span>
+        <div class="stage-connector">→</div>
+      </div>
+
+      <!-- Stage 4: Bicep + Migrate -->
+      <div class="pipeline-stage">
+        <div class="stage-header">
+          <img src="icons/azure-resource-manager.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Bicep IaC<br/>+ Migrations</span>
+        </div>
+        <ul class="stage-steps">
+          <li>az deployment group create</li>
+          <li>Bicep what-if (staging)</li>
+          <li>EF Core migrations job</li>
+          <li>Container App Job (1x)</li>
+          <li>Key Vault secrets sync</li>
+          <li>Managed Identity assign</li>
+        </ul>
+        <span class="stage-badge badge-oidc">OIDC workload</span>
+        <div class="stage-connector">→</div>
+      </div>
+
+      <!-- Stage 5: Deploy staging -->
+      <div class="pipeline-stage">
+        <div class="stage-header">
+          <img src="icons/devops-deploy-cloud.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Deploy<br/>Staging</span>
+        </div>
+        <ul class="stage-steps">
+          <li>az containerapp update</li>
+          <li>Blue/green via revisions</li>
+          <li>Health probe validation</li>
+          <li>Smoke tests (curl)</li>
+          <li>App Insights alertas</li>
+          <li>Traffic split 0→100%</li>
+        </ul>
+        <span class="stage-badge badge-auto">AUTO → develop</span>
+        <div class="stage-connector" style="color:#107c10;">→</div>
+      </div>
+
+      <!-- Stage 6: Prod (manual gate) -->
+      <div class="pipeline-stage" style="border-left:1px solid rgba(16,124,16,0.3);">
+        <div class="stage-header">
+          <img src="icons/Container-Instances.svg" class="stage-icon" style="filter:brightness(2);">
+          <span class="stage-name">Deploy<br/>Produção</span>
+        </div>
+        <ul class="stage-steps">
+          <li>🔒 Aprovação manual</li>
+          <li>az containerapp update</li>
+          <li>Revision weight 10→100%</li>
+          <li>Rollback &lt;5min se falha</li>
+          <li>Monitor alertas ON</li>
+          <li>Deploy time &lt;5min</li>
+        </ul>
+        <span class="stage-badge badge-gate">MANUAL GATE</span>
+      </div>
+
+    </div><!-- /pipeline-stages -->
+
+    <!-- Branch strategy note -->
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:5px;padding:10px;">
+        <div style="font-size:9px;font-weight:700;color:#f59e0b;margin-bottom:5px;font-family:'Courier New',monospace;">// feature/* branches</div>
+        <div style="font-size:8px;color:#475569;line-height:1.6;">Build + Test + SAST<br/>Sem deploy automático<br/>PR obrigatório para merge</div>
+      </div>
+      <div style="background:rgba(0,120,212,0.04);border:1px solid rgba(0,120,212,0.1);border-radius:5px;padding:10px;">
+        <div style="font-size:9px;font-weight:700;color:#60a5fa;margin-bottom:5px;font-family:'Courier New',monospace;">// develop → staging</div>
+        <div style="font-size:8px;color:#475569;line-height:1.6;">Pipeline completo automático<br/>Deploy staging após testes<br/>ACR tag: <span style="color:#93c5fd;">sha-{commit}</span></div>
+      </div>
+      <div style="background:rgba(16,124,16,0.04);border:1px solid rgba(16,124,16,0.1);border-radius:5px;padding:10px;">
+        <div style="font-size:9px;font-weight:700;color:#4ade80;margin-bottom:5px;font-family:'Courier New',monospace;">// main → produção</div>
+        <div style="font-size:8px;color:#475569;line-height:1.6;">Aprovação manual gate<br/>Blue/green via revisions<br/>ACR tag: <span style="color:#86efac;">v{major}.{minor}.{patch}</span></div>
+      </div>
+    </div>
+  </div><!-- /pipeline -->
+</div><!-- /section 3 -->
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 4 — CLEAN ARCHITECTURE LAYERS -->
+<!-- ═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">04 — Clean Architecture · 5 Camadas · Dependências sempre para dentro</div>
+  <div class="diagram-canvas">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+      <div style="background:rgba(0,120,212,0.15);border-right:1px solid rgba(255,255,255,0.06);padding:16px;text-align:center;">
+        <div style="font-size:8px;color:#60a5fa;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:8px;">DOMÍNIO</div>
+        <div style="font-size:18px;font-weight:800;color:#93c5fd;font-family:Georgia,serif;margin-bottom:8px;">Domain</div>
+        <div style="font-size:8px;color:#475569;line-height:1.8;">26 Entities<br/>19 Enums<br/>Value Objects<br/>IPaymentGateway<br/>IPaymentRepository<br/><strong style="color:#60a5fa;">Zero dependências externas</strong></div>
+      </div>
+      <div style="background:rgba(0,120,212,0.1);border-right:1px solid rgba(255,255,255,0.06);padding:16px;text-align:center;">
+        <div style="font-size:8px;color:#60a5fa;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:8px;">APLICAÇÃO</div>
+        <div style="font-size:18px;font-weight:800;color:#93c5fd;font-family:Georgia,serif;margin-bottom:8px;">Application</div>
+        <div style="font-size:8px;color:#475569;line-height:1.8;">Use Case Handlers<br/>MediatR Commands<br/>FluentValidation<br/>DTO Mappings<br/><strong style="color:#60a5fa;">Só depende de Domain</strong></div>
+      </div>
+      <div style="background:rgba(0,120,212,0.07);border-right:1px solid rgba(255,255,255,0.06);padding:16px;text-align:center;">
+        <div style="font-size:8px;color:#60a5fa;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:8px;">INFRAESTRUTURA</div>
+        <div style="font-size:18px;font-weight:800;color:#93c5fd;font-family:Georgia,serif;margin-bottom:8px;">Infrastructure</div>
+        <div style="font-size:8px;color:#475569;line-height:1.8;">EF Core Repositories<br/>CieloGatewayClient<br/>Resilience Pipelines<br/>Quartz Jobs<br/><strong style="color:#60a5fa;">Implementa portas Domain</strong></div>
+      </div>
+      <div style="background:rgba(0,120,212,0.04);border-right:1px solid rgba(255,255,255,0.06);padding:16px;text-align:center;">
+        <div style="font-size:8px;color:#60a5fa;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:8px;">CONTRATOS</div>
+        <div style="font-size:18px;font-weight:800;color:#93c5fd;font-family:Georgia,serif;margin-bottom:8px;">Contracts</div>
+        <div style="font-size:8px;color:#475569;line-height:1.8;">Request DTOs<br/>Response DTOs<br/>Constants<br/><strong style="color:#60a5fa;">Sem dependências</strong></div>
+      </div>
+      <div style="background:rgba(0,120,212,0.02);padding:16px;text-align:center;">
+        <div style="font-size:8px;color:#60a5fa;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:8px;">API</div>
+        <div style="font-size:18px;font-weight:800;color:#93c5fd;font-family:Georgia,serif;margin-bottom:8px;">API</div>
+        <div style="font-size:8px;color:#475569;line-height:1.8;">Controllers (14)<br/>Middlewares<br/>Health Checks<br/>DI Registration<br/><strong style="color:#60a5fa;">Entry point da app</strong></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:8px;color:#1e3a5f;font-family:'Courier New',monospace;letter-spacing:2px;">
+      ← DEPENDÊNCIAS APONTAM PARA DENTRO · DOMAIN NÃO CONHECE INFRASTRUCTURE →
+    </div>
+  </div>
+</div>
+
+<script>
+const s = document.createElement('script');
+s.src = '/helper.js';
+document.head.appendChild(s);
+</script>
+</body>
+</html>

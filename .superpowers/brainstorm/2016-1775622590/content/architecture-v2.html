@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBS — Arquitetura v2</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #060c18;
+  color: #cbd5e1;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 40px 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ─── Type scale ─── */
+.eyebrow { font-family:'Courier New',monospace; font-size:10px; color:#0078d4; letter-spacing:4px; text-transform:uppercase; margin-bottom:8px; }
+.page-title { font-family:Georgia,serif; font-size:34px; font-weight:800; color:#f1f5f9; line-height:1.15; margin-bottom:10px; }
+.section-rule { font-family:'Courier New',monospace; font-size:10px; color:#1e3a5f; letter-spacing:3px; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; margin-bottom:28px; }
+h2 { font-family:Georgia,serif; font-size:22px; font-weight:700; color:#f1f5f9; margin-bottom:6px; }
+h3 { font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:8px; }
+h4 { font-size:12px; font-weight:700; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; font-family:'Courier New',monospace; }
+p  { font-size:13px; color:#64748b; line-height:1.7; }
+
+/* ─── Spacing ─── */
+.section { margin-bottom: 64px; }
+.mb-4  { margin-bottom: 16px; }
+.mb-6  { margin-bottom: 24px; }
+.mb-8  { margin-bottom: 32px; }
+.mt-6  { margin-top: 24px; }
+.mt-8  { margin-top: 32px; }
+
+/* ─── Page header ─── */
+.page-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.logos { display:flex; gap:20px; align-items:center; }
+.logo-img { height:30px; object-fit:contain; opacity:0.85; }
+.logo-sep { width:1px; height:26px; background:rgba(255,255,255,0.1); }
+
+/* ─── TIMELINE ─── */
+.timeline-track { position:relative; display:flex; gap:0; margin-bottom:48px; }
+.timeline-track::before {
+  content:''; position:absolute;
+  top:22px; left:20px; right:20px; height:2px;
+  background: linear-gradient(90deg,
+    #d83b01 0%, #d83b01 18%,
+    #f59e0b 18%, #f59e0b 36%,
+    #0078d4 36%, #0078d4 56%,
+    #107c10 56%, #107c10 78%,
+    #60a5fa 78%, #60a5fa 100%
+  );
+}
+.tl-step { flex:1; padding-top:44px; padding-right:6px; position:relative; }
+.tl-dot {
+  position:absolute; top:10px; left:0;
+  width:26px; height:26px; border-radius:50%;
+  border:2px solid; background:#060c18;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:700; font-family:'Courier New',monospace;
+}
+.tl-step.s1 .tl-dot { border-color:#d83b01; color:#d83b01; }
+.tl-step.s2 .tl-dot { border-color:#f59e0b; color:#f59e0b; }
+.tl-step.s3 .tl-dot { border-color:#0078d4; color:#0078d4; }
+.tl-step.s4 .tl-dot { border-color:#107c10; color:#107c10; }
+.tl-step.s5 .tl-dot { border-color:#60a5fa; color:#60a5fa; }
+.tl-title { font-size:13px; font-weight:700; color:#f1f5f9; margin-bottom:4px; }
+.tl-meta  { font-size:11px; color:#475569; line-height:1.6; }
+
+/* ─── Arch panels ─── */
+/* LEGACY — amber palette, dark warm bg */
+.panel-legacy {
+  background: #0e0b04;
+  border: 1.5px solid rgba(245,158,11,0.3);
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-legacy::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(245,158,11,0.07) 0%, transparent 60%),
+              radial-gradient(ellipse at bottom left, rgba(216,59,1,0.05) 0%, transparent 50%);
+  pointer-events:none;
+}
+
+/* CLOUD — blue/green palette */
+.panel-cloud {
+  background: #050d1a;
+  border: 1.5px solid rgba(0,120,212,0.3);
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-cloud::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(0,120,212,0.1) 0%, transparent 55%),
+              radial-gradient(ellipse at bottom left, rgba(16,124,16,0.06) 0%, transparent 55%);
+  pointer-events:none;
+}
+
+.panel-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.05); position:relative; }
+.panel-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'Courier New',monospace; font-size:10px; font-weight:700;
+  padding:4px 12px; border-radius:3px; letter-spacing:1.5px; text-transform:uppercase;
+}
+.badge-legacy  { background:rgba(245,158,11,0.12); color:#fcd34d; border:1px solid rgba(245,158,11,0.3); }
+.badge-cloud   { background:rgba(0,120,212,0.12);  color:#93c5fd; border:1px solid rgba(0,120,212,0.3); }
+.badge-done    { background:rgba(16,124,16,0.15);  color:#86efac; border:1px solid rgba(16,124,16,0.35); margin-left:8px; }
+
+/* ─── Group containers ─── */
+.group {
+  border-radius:8px; padding:16px 18px;
+  margin-bottom:16px; position:relative;
+}
+.group-legacy {
+  background: rgba(245,158,11,0.04);
+  border: 1px solid rgba(245,158,11,0.15);
+}
+.group-cloud {
+  background: rgba(0,120,212,0.04);
+  border: 1px solid rgba(0,120,212,0.12);
+}
+.group-neutral {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.group-title {
+  font-family:'Courier New',monospace; font-size:10px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:14px;
+}
+.gt-legacy  { color:#92400e; }
+.gt-cloud   { color:#1e40af; }
+.gt-neutral { color:#1e293b; }
+
+/* ─── NODE cards ─── */
+.nodes { display:flex; flex-wrap:wrap; gap:12px; }
+.node {
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+  padding:14px 16px; border-radius:8px; min-width:100px; max-width:130px;
+  text-align:center; cursor:default;
+  transition:transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.node:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+.node img { width:40px; height:40px; object-fit:contain; }
+.node-icon-placeholder {
+  width:40px; height:40px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+}
+.node-name { font-size:12px; font-weight:700; line-height:1.3; }
+.node-sub  { font-size:10px; color:#475569; line-height:1.4; }
+.node-badge {
+  position:absolute; top:-7px; right:-7px;
+  font-size:8px; font-weight:700; font-family:'Courier New',monospace;
+  padding:2px 5px; border-radius:3px;
+}
+
+/* legacy node colors — amber on dark warm */
+.node-legacy {
+  background: rgba(245,158,11,0.07);
+  border: 1px solid rgba(245,158,11,0.2);
+}
+.node-legacy .node-name { color:#fcd34d; }
+.node-legacy-danger {
+  background: rgba(220,38,38,0.07);
+  border: 1px solid rgba(220,38,38,0.2);
+}
+.node-legacy-danger .node-name { color:#fca5a5; }
+.badge-eol  { background:#7c2d12; color:#fdba74; }
+.badge-cve  { background:#7f1d1d; color:#fca5a5; }
+.badge-stub { background:#451a03; color:#fde68a; font-size:7px; }
+
+/* cloud node colors */
+.node-cloud  { background:rgba(0,120,212,0.07); border:1px solid rgba(0,120,212,0.2); }
+.node-cloud .node-name { color:#93c5fd; }
+.node-green  { background:rgba(16,124,16,0.07);  border:1px solid rgba(16,124,16,0.2); }
+.node-green .node-name  { color:#86efac; }
+.node-purple { background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.2); }
+.node-purple .node-name { color:#c4b5fd; }
+.badge-msi   { background:#14532d; color:#86efac; }
+.badge-keda  { background:#1e3a5f; color:#93c5fd; }
+.badge-pci   { background:#14532d; color:#86efac; }
+
+/* ─── Security tags ─── */
+.tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.tag-crit { background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.25); color:#fca5a5; font-size:10px; padding:3px 9px; border-radius:4px; }
+.tag-fix  { background:rgba(16,124,16,0.1); border:1px solid rgba(16,124,16,0.25); color:#86efac; font-size:10px; padding:3px 9px; border-radius:4px; }
+
+/* ─── Flow arrow ─── */
+.flow-arrow { text-align:center; font-size:22px; color:#1e3a5f; margin:8px 0; }
+.flow-label { text-align:center; font-family:'Courier New',monospace; font-size:10px; color:#1e3a5f; letter-spacing:2px; margin-bottom:6px; }
+
+/* ─── Monolith wrapper ─── */
+.monolith-wrap {
+  border:1.5px dashed rgba(245,158,11,0.2);
+  border-radius:8px; padding:16px; margin-bottom:16px;
+  position:relative; background:rgba(245,158,11,0.02);
+}
+.monolith-label {
+  position:absolute; top:-11px; left:14px;
+  background:#0e0b04; padding:0 10px;
+  font-family:'Courier New',monospace; font-size:10px;
+  color:#d97706; letter-spacing:2px;
+}
+
+/* ─── Azure env wrapper ─── */
+.azure-env-wrap {
+  border:1.5px dashed rgba(0,120,212,0.25);
+  border-radius:8px; padding:16px; margin-bottom:16px;
+  position:relative; background:rgba(0,120,212,0.02);
+}
+.azure-env-label {
+  position:absolute; top:-11px; left:14px;
+  background:#050d1a; padding:0 10px;
+  display:flex; align-items:center; gap:6px;
+  font-family:'Courier New',monospace; font-size:10px;
+  color:#0078d4; letter-spacing:2px;
+}
+
+/* ─── Module row (horizontal list in monolith) ─── */
+.module-row {
+  display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;
+}
+.module-card {
+  background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.18);
+  border-radius:7px; padding:12px 14px; flex:1; min-width:140px;
+  position:relative;
+}
+.module-card.danger {
+  background:rgba(220,38,38,0.06); border-color:rgba(220,38,38,0.18);
+}
+.module-name { font-size:13px; font-weight:700; color:#fcd34d; margin-bottom:4px; font-family:'Courier New',monospace; }
+.module-card.danger .module-name { color:#fca5a5; }
+.module-detail { font-size:11px; color:#78716c; line-height:1.6; }
+
+/* ─── Container card in Azure ─── */
+.container-card {
+  background:rgba(0,120,212,0.05); border:1px solid rgba(0,120,212,0.18);
+  border-radius:8px; padding:16px; flex:1; min-width:180px;
+}
+.container-card.soap { background:rgba(245,158,11,0.05); border-color:rgba(245,158,11,0.18); }
+.container-card.portal { background:rgba(16,124,16,0.05); border-color:rgba(16,124,16,0.18); }
+.container-name { font-size:14px; font-weight:700; color:#93c5fd; margin-bottom:4px; font-family:'Courier New',monospace; }
+.container-card.soap .container-name { color:#fcd34d; }
+.container-card.portal .container-name { color:#86efac; }
+.container-detail { font-size:11px; color:#475569; line-height:1.7; }
+.replica-pill {
+  display:inline-block; margin-top:8px;
+  background:rgba(0,120,212,0.12); border:1px solid rgba(0,120,212,0.25);
+  color:#60a5fa; font-size:9px; font-family:'Courier New',monospace;
+  padding:2px 8px; border-radius:20px;
+}
+.container-card.soap .replica-pill { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.2); color:#fde68a; }
+.container-card.portal .replica-pill { background:rgba(16,124,16,0.1); border-color:rgba(16,124,16,0.2); color:#86efac; }
+
+/* ─── Service grid ─── */
+.service-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:12px; }
+.service-card {
+  background:rgba(0,120,212,0.05); border:1px solid rgba(0,120,212,0.15);
+  border-radius:8px; padding:14px 12px; text-align:center;
+  transition:transform 0.15s;
+}
+.service-card:hover { transform:translateY(-2px); }
+.service-card img { width:38px; height:38px; object-fit:contain; margin-bottom:8px; display:block; margin-left:auto; margin-right:auto; }
+.service-name { font-size:12px; font-weight:600; color:#93c5fd; margin-bottom:3px; }
+.service-detail { font-size:10px; color:#475569; line-height:1.5; }
+
+/* ─── DevOps pipeline ─── */
+.pipeline-wrap {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius:10px; padding:24px;
+  overflow-x:auto;
+}
+.pipeline-flow { display:flex; align-items:stretch; gap:0; min-width:1100px; }
+.pipe-stage {
+  flex:1; padding:0 14px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  position:relative; min-width:130px;
+}
+.pipe-stage:last-child { border-right:none; }
+.pipe-icon-wrap { text-align:center; margin-bottom:10px; }
+.pipe-icon-wrap img { width:36px; height:36px; object-fit:contain; filter:brightness(1.6); }
+.pipe-stage-name { text-align:center; font-size:12px; font-weight:700; color:#f1f5f9; margin-bottom:10px; line-height:1.3; }
+.pipe-steps { list-style:none; }
+.pipe-steps li { font-size:11px; color:#64748b; padding:2px 0; display:flex; gap:5px; line-height:1.5; }
+.pipe-steps li::before { content:'›'; color:#0078d4; font-weight:700; flex-shrink:0; }
+.pipe-badge {
+  display:block; text-align:center; margin-top:10px;
+  font-family:'Courier New',monospace; font-size:9px; font-weight:700;
+  padding:3px 8px; border-radius:3px;
+}
+.pb-trigger { background:rgba(245,158,11,0.12); color:#fde68a; border:1px solid rgba(245,158,11,0.25); }
+.pb-auto    { background:rgba(0,120,212,0.12);  color:#93c5fd; border:1px solid rgba(0,120,212,0.25); }
+.pb-gate    { background:rgba(16,124,16,0.12);  color:#86efac; border:1px solid rgba(16,124,16,0.25); }
+.pb-oidc    { background:rgba(139,92,246,0.12); color:#c4b5fd; border:1px solid rgba(139,92,246,0.25); }
+.pipe-connector {
+  position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+  font-size:16px; color:#1e3a5f; z-index:2;
+}
+
+/* ─── IaC box ─── */
+.iac-box {
+  background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.18);
+  border-radius:8px; padding:18px 20px; margin-bottom:20px;
+}
+.iac-title { font-family:'Courier New',monospace; font-size:11px; color:#a78bfa; letter-spacing:2px; margin-bottom:12px; }
+.iac-files { display:flex; flex-wrap:wrap; gap:7px; }
+.iac-file  {
+  background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.15);
+  border-radius:4px; padding:5px 11px; font-family:'Courier New',monospace;
+  font-size:11px; color:#c4b5fd;
+}
+.iac-cmd { margin-top:12px; font-family:'Courier New',monospace; font-size:11px; color:#64748b; line-height:1.8; }
+.iac-cmd .prompt { color:#a78bfa; }
+
+/* ─── Clean arch layers ─── */
+.layer-row { display:grid; grid-template-columns:repeat(5,1fr); border-radius:8px; overflow:hidden; margin-bottom:8px; }
+.layer {
+  padding:20px 14px; text-align:center;
+  border-right:1px solid rgba(255,255,255,0.05);
+}
+.layer:last-child { border-right:none; }
+.layer-num { font-family:'Courier New',monospace; font-size:9px; letter-spacing:2px; margin-bottom:8px; }
+.layer-name { font-family:Georgia,serif; font-size:20px; font-weight:700; margin-bottom:10px; }
+.layer-items { font-size:11px; line-height:1.9; }
+
+/* ─── Branch strategy ─── */
+.branch-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+.branch-card { border-radius:6px; padding:14px 16px; }
+
+/* ─── Divider ─── */
+.h-rule { height:1px; background:rgba(255,255,255,0.04); margin:20px 0; }
+
+/* ─── Job pills ─── */
+.jobs-wrap { display:flex; flex-wrap:wrap; gap:8px; }
+.job-pill {
+  background:rgba(0,120,212,0.07); border:1px solid rgba(0,120,212,0.15);
+  border-radius:6px; padding:8px 12px;
+}
+.job-name   { font-size:12px; font-weight:700; color:#93c5fd; font-family:'Courier New',monospace; }
+.job-detail { font-size:10px; color:#475569; margin-top:2px; }
+
+/* ─── Endpoint comparison ─── */
+.ep-compare { display:grid; grid-template-columns:1fr 48px 1fr; gap:0; align-items:center; }
+.ep-col { }
+.ep-vs  { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ep-vs-circle { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#475569; font-family:'Courier New',monospace; }
+.ep-card { border-radius:7px; padding:14px 16px; margin-bottom:10px; }
+.ep-legacy-card { background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); }
+.ep-cloud-card  { background:rgba(0,120,212,0.07);  border:1px solid rgba(0,120,212,0.2); }
+.ep-title { font-size:13px; font-weight:700; margin-bottom:4px; }
+.ep-legacy-card .ep-title { color:#fcd34d; }
+.ep-cloud-card  .ep-title { color:#93c5fd; }
+.ep-body { font-size:11px; color:#64748b; line-height:1.7; }
+.ep-sunset { background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:6px; padding:12px 16px; margin-top:12px; font-size:11px; color:#92400e; line-height:1.6; }
+.ep-sunset strong { color:#fde68a; }
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  HEADER                          ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="page-header">
+  <div>
+    <div class="eyebrow">Assurant Brasil · DBS · Arquitetura de Sistema</div>
+    <h1 class="page-title">Mapas Arquiteturais Detalhados<br/>AS-IS → TO-BE</h1>
+    <p style="max-width:640px;">Análise completa do sistema legado Java EE / JBoss e da nova arquitetura cloud-native .NET 9 / Azure Container Apps — com esteira DevOps, IaC Bicep e estratégia de endpoints SOAP + REST.</p>
+  </div>
+  <div class="logos">
+    <img src="logo-sistran.png" alt="Sistran" class="logo-img" style="filter:brightness(0) invert(1);">
+    <div class="logo-sep"></div>
+    <img src="logo-lumina-branca.png" alt="Lumina AI" class="logo-img">
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  JORNADA TIMELINE                ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">00 — Jornada de Transformação</div>
+  <div class="timeline-track">
+
+    <div class="tl-step s1">
+      <div class="tl-dot">01</div>
+      <div class="tl-title">Diagnóstico AS-IS</div>
+      <div class="tl-meta">Engenharia reversa completa<br/>1.073 classes · 42 dívidas<br/>9 CVEs críticos · 0 testes<br/>Struts 1.3 EOL · CXF 2014</div>
+    </div>
+
+    <div class="tl-step s2">
+      <div class="tl-dot">02</div>
+      <div class="tl-title">Análise de Alternativas</div>
+      <div class="tl-meta">Opção A: Java 25 + Spring Boot<br/>on-premises WildFly<br/>Opção B: .NET 9 + Azure<br/>cloud-native · decisão documentada</div>
+    </div>
+
+    <div class="tl-step s3">
+      <div class="tl-dot">03</div>
+      <div class="tl-title">21 ADRs Aprovados</div>
+      <div class="tl-meta">Clean Architecture · Cielo REST<br/>SOAP Adapter isolado<br/>Okta OIDC · Key Vault<br/>Tokenização obrigatória</div>
+    </div>
+
+    <div class="tl-step s4">
+      <div class="tl-dot">04</div>
+      <div class="tl-title">Implementação · 20 Sprints</div>
+      <div class="tl-meta">114 dias · 4 containers Azure<br/>191 testes · CI/CD Bicep<br/>SOAP Adapter + REST API<br/>GitHub Actions OIDC</div>
+    </div>
+
+    <div class="tl-step s5">
+      <div class="tl-dot">05</div>
+      <div class="tl-title">Resultado</div>
+      <div class="tl-meta">9 CVEs → 0 · 0 testes → 191<br/>SOAP + REST dual endpoint<br/>Azure Container Apps live<br/>PCI DSS SAQ A-EP</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  01 — AS-IS LEGACY               ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">01 — Arquitetura Legada · AS-IS · JBoss EAP 7.4</div>
+
+  <div class="panel-legacy">
+    <div class="panel-header">
+      <span class="panel-badge badge-legacy">⚠ Monolito Java EE · JBoss EAP 7.4</span>
+      <p style="font-size:12px; color:#78716c;">7 módulos Eclipse fortemente acoplados via JNDI · 0 testes · 9 vulnerabilidades críticas</p>
+    </div>
+
+    <!-- External SOAP inbound -->
+    <div class="group group-legacy mb-6">
+      <div class="group-title gt-legacy">Parceiros Externos — Inbound SOAP/WS-Security</div>
+      <div class="nodes">
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.12);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#f87171" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span class="node-name">Assurant Systems</span>
+          <span class="node-sub">SOAP / WS-Security<br/>Criptografia body</span>
+          <span class="node-badge badge-cve">CVE</span>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.12);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#f87171" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span class="node-name">Marisa /<br/>Parceiros</span>
+          <span class="node-sub">SOAP / WSDL<br/>stubs gerados</span>
+          <span class="node-badge badge-cve">CVE</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;">
+          <svg viewBox="0 0 32 16" width="40" height="20"><path d="M0 8 L26 8 M20 2 L32 8 L20 14" stroke="#d97706" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="node node-legacy-danger" style="min-width:140px; max-width:160px;">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.12);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#f87171" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zm0 10L2 7m10 10l10-5"/></svg>
+          </div>
+          <span class="node-name">dbs-ws</span>
+          <span class="node-sub">Apache CXF 2.7.17<br/>Ano 2014 · CVEs ativas<br/>/dbs · 7 @WebMethod</span>
+          <span class="node-badge badge-eol">EOL</span>
+        </div>
+      </div>
+      <div class="tags mt-6">
+        <span class="tag-crit">🔒 WS-Security senha "changeit" no código</span>
+        <span class="tag-crit">🔒 Keystore gravada no banco Oracle</span>
+        <span class="tag-crit">🔒 CXF 2.7.17 com CVEs não corrigidas</span>
+        <span class="tag-crit">🔒 WS-Security sem assinatura — só criptografia</span>
+      </div>
+    </div>
+
+    <!-- JBoss Monolith -->
+    <div class="monolith-wrap">
+      <div class="monolith-label">JBOSS EAP 7.4 — 7 módulos Eclipse via JNDI / @Remote EJB</div>
+
+      <!-- dbs-lib -->
+      <div class="module-row">
+        <div class="module-card" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25);">
+          <div class="module-name">dbs-lib</div>
+          <div class="module-detail">Base compartilhada: 28 entidades JPA, interfaces @Remote, enums e utilitários — tudo misturado.<br/>Todo módulo depende deste. Impossível substituir isoladamente.</div>
+        </div>
+      </div>
+
+      <!-- Core modules row -->
+      <div class="module-row">
+        <div class="module-card danger" style="flex:2;">
+          <div class="module-name">dbs — BillingServiceBean</div>
+          <div class="module-detail">
+            EJB 3.1 Stateless · Bean Managed Transactions (begin/commit/rollback manual) ·
+            <strong style="color:#fca5a5;">4.700+ linhas em uma única classe</strong> ·
+            ~300 stubs JAX-WS (gerados por wsimport do WSDL Braspag) ·
+            JNDI lookup manual: <code style="font-size:10px;">java:global/dbs/BillingServiceBean</code>
+          </div>
+        </div>
+        <div class="module-card">
+          <div class="module-name">dbsdb</div>
+          <div class="module-detail">Padrão DLO proprietário<br/>27 pares DAO + DLO<br/>54 EJB Stateless beans<br/>não testáveis sem container</div>
+        </div>
+        <div class="module-card">
+          <div class="module-name">dbstimer</div>
+          <div class="module-detail">8 EJB Timer @Schedule<br/>Host-parity hack par/ímpar<br/>persistent=false: jobs<br/>perdidos em restart</div>
+        </div>
+      </div>
+
+      <!-- Portal modules row -->
+      <div class="module-row">
+        <div class="module-card danger">
+          <div class="module-name">dbsportal</div>
+          <div class="module-detail">Admin portal<br/>Struts 1.3 — EOL 2013<br/>44 JSPs · jQuery UI 1.8<br/>60+ Struts Actions<br/>DisplayTag paginated tables</div>
+        </div>
+        <div class="module-card danger">
+          <div class="module-name">dbspag</div>
+          <div class="module-detail">Portal de pagamento<br/>Struts 1.3 · Bootstrap 4<br/>JWT via AES/ECB<br/>reCAPTCHA v2<br/>5 JSPs</div>
+        </div>
+      </div>
+
+      <div class="h-rule"></div>
+      <h4 style="color:#7c3aed; margin-bottom:8px;">9 Vulnerabilidades CRÍTICAS dentro do monolito</h4>
+      <div class="tags">
+        <span class="tag-crit">AES-CBC IV=zeros (ECB equivalent)</span>
+        <span class="tag-crit">JWT HS256 secret hardcoded no .java</span>
+        <span class="tag-crit">MD5 sem salt — rainbow tables</span>
+        <span class="tag-crit">PAN e CVV em toString() → logs</span>
+        <span class="tag-crit">Token gerado de "AssurantBrasil"</span>
+        <span class="tag-crit">Keystore STORE_PASS/KEY_PASS em tabela Oracle</span>
+        <span class="tag-crit">AES/ECB em cookies + key hardcoded</span>
+        <span class="tag-crit">WS-Security "changeit" em código</span>
+        <span class="tag-crit">11+ credenciais em código e banco</span>
+      </div>
+    </div>
+
+    <!-- Oracle + jobs -->
+    <div class="flow-label">↕ JPA 2.0 / DataSource JNDI / Oracle Dialect</div>
+
+    <div class="group group-legacy">
+      <div class="group-title gt-legacy">Banco de Dados + Integrações Externas Outbound</div>
+      <div class="nodes mb-6">
+        <div class="node node-legacy" style="min-width:120px;">
+          <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#fcd34d" stroke-width="1.2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5"/><path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3"/></svg>
+          <span class="node-name">Oracle 19c/21c</span>
+          <span class="node-sub">schema AIZ_DBS<br/>27 tabelas · 26 seq<br/>4 procedures · 2 views</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;">
+          <svg viewBox="0 0 32 16" width="40" height="20"><path d="M0 8 L26 8 M20 2 L32 8 L20 14" stroke="#d97706" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fca5a5" stroke-width="1.5"><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+          </div>
+          <span class="node-name">PagadorTransaction</span>
+          <span class="node-sub">SOAP · *.pagador.com.br<br/>DESCONTINUADO</span>
+          <span class="node-badge badge-stub">~100 stubs</span>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fca5a5" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          <span class="node-name">PagadorQuery</span>
+          <span class="node-sub">SOAP · *.pagador.com.br</span>
+          <span class="node-badge badge-stub">~50 stubs</span>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fca5a5" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <span class="node-name">CartãoProtegido</span>
+          <span class="node-sub">SOAP · cartaoprotegido<br/>.braspag.com.br</span>
+          <span class="node-badge badge-stub">~100 stubs</span>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fca5a5" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <span class="node-name">ReconciliationFiles</span>
+          <span class="node-sub">SOAP · reconciliation<br/>.braspag.com.br</span>
+          <span class="node-badge badge-stub">~50 stubs</span>
+        </div>
+        <div class="node node-legacy">
+          <div class="node-icon-placeholder" style="background:rgba(245,158,11,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fcd34d" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="node-name">ACSEL / ELITA</span>
+          <span class="node-sub">File export filesystem<br/>120-char · CSV pipe</span>
+        </div>
+        <div class="node node-legacy-danger">
+          <div class="node-icon-placeholder" style="background:rgba(220,38,38,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fca5a5" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="node-name">SCA Auth</span>
+          <span class="node-sub">SOAP Auth portal<br/>Sem OAuth2/JWT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  02 — TO-BE AZURE CLOUD          ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">02 — Arquitetura Cloud-Native · TO-BE · Azure Container Apps · .NET 9</div>
+
+  <div class="panel-cloud">
+    <div class="panel-header">
+      <span class="panel-badge badge-cloud">Azure Container Apps · .NET 9 · Next.js 16</span>
+      <span class="panel-badge badge-done">✓ Implementado · 191 testes</span>
+    </div>
+
+    <!-- Callers row -->
+    <div class="group group-neutral mb-6">
+      <div class="group-title gt-neutral">Clientes externos</div>
+      <div class="nodes">
+        <div class="node node-legacy" style="border-color:rgba(245,158,11,0.25);">
+          <div class="node-icon-placeholder" style="background:rgba(245,158,11,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fcd34d" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zm0 10L2 7m10 10l10-5"/></svg>
+          </div>
+          <span class="node-name" style="color:#fcd34d;">Parceiros Legados</span>
+          <span class="node-sub">SOAP/WS-Security<br/>compatibilidade mantida</span>
+        </div>
+        <div class="node node-cloud">
+          <div class="node-icon-placeholder" style="background:rgba(0,120,212,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#93c5fd" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <span class="node-name">Portal Next.js</span>
+          <span class="node-sub">Admin + Pagamento<br/>Okta SSO · shadcn/ui</span>
+        </div>
+        <div class="node node-cloud">
+          <div class="node-icon-placeholder" style="background:rgba(0,120,212,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#93c5fd" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <span class="node-name">Novos Sistemas</span>
+          <span class="node-sub">REST / JSON<br/>Bearer JWT RS256</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; text-align:center; margin-bottom:8px;">
+      <div style="font-family:'Courier New',monospace;font-size:10px;color:#7c6a00;">↓ SOAP — porta 8080</div>
+      <div style="font-family:'Courier New',monospace;font-size:10px;color:#1e40af;">↓ HTTPS / REST — porta 443</div>
+    </div>
+
+    <!-- Azure Container Apps Environment -->
+    <div class="azure-env-wrap mb-6">
+      <div class="azure-env-label">
+        <img src="icons/Container-Instances.svg" width="14" height="14" style="filter:brightness(1.5);">
+        AZURE CONTAINER APPS ENVIRONMENT · rg-dbs-prod
+      </div>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+
+        <div class="container-card soap">
+          <div class="container-name">SOAP Adapter</div>
+          <div class="container-detail">
+            <strong style="color:#fde68a;">CoreWCF</strong> — container isolado<br/>
+            0.5 vCPU · 256Mi RAM<br/>
+            Preserva WSDL original<br/>
+            WS-Security via Key Vault<br/>
+            Delega → Application Layer<br/>
+            Sunset planejado: +12 meses
+          </div>
+          <div class="replica-pill">min: 2 · max: 4 réplicas</div>
+        </div>
+
+        <div class="container-card">
+          <div class="container-name">Payment API</div>
+          <div class="container-detail">
+            <strong style="color:#93c5fd;">ASP.NET Core · .NET 9</strong><br/>
+            1 vCPU · 2Gi RAM<br/>
+            6 controllers REST<br/>
+            Clean Architecture (5 camadas)<br/>
+            MediatR + FluentValidation<br/>
+            8 Quartz.NET jobs<br/>
+            EF Core 9 + Polly v8
+          </div>
+          <div class="replica-pill">min: 1 · max: 5 (KEDA)</div>
+        </div>
+
+        <div class="container-card">
+          <div class="container-name">Admin API</div>
+          <div class="container-detail">
+            <strong style="color:#93c5fd;">ASP.NET Core · .NET 9</strong><br/>
+            0.5 vCPU · 1Gi RAM<br/>
+            8 controllers admin<br/>
+            CRUD 13 entidades<br/>
+            ACSEL + ELITA export<br/>
+            Relatórios + Auditoria<br/>
+            Rate limit: 500 req/min
+          </div>
+          <div class="replica-pill">min: 1 · max: 3 réplicas</div>
+        </div>
+
+        <div class="container-card portal">
+          <div class="container-name">Portal Web</div>
+          <div class="container-detail">
+            <strong style="color:#86efac;">Next.js 16 · App Router</strong><br/>
+            0.5 vCPU · 1Gi RAM<br/>
+            Tailwind CSS v4<br/>
+            shadcn/ui + Radix<br/>
+            TanStack Query v5<br/>
+            Okta React SDK<br/>
+            45 telas funcionais
+          </div>
+          <div class="replica-pill">min: 1 · max: 10 (sticky)</div>
+        </div>
+
+      </div>
+
+      <!-- Quartz Jobs -->
+      <div class="h-rule"></div>
+      <h4 style="color:#1e40af; margin-bottom:12px;">8 Quartz.NET Jobs — dentro do Payment API container</h4>
+      <div class="jobs-wrap">
+        <div class="job-pill"><div class="job-name">RecurrenceJob</div><div class="job-detail">Gera cobranças mensais · 4×/dia</div></div>
+        <div class="job-pill"><div class="job-name">RetryJob</div><div class="job-detail">Reprocessa pagamentos falhos</div></div>
+        <div class="job-pill"><div class="job-name">PendingCaptureJob</div><div class="job-detail">Captura antes da expiração</div></div>
+        <div class="job-pill"><div class="job-name">ReconciliationJob</div><div class="job-detail">Sync status com Braspag · 3h/3h</div></div>
+        <div class="job-pill"><div class="job-name">ExpirationJob</div><div class="job-detail">Expira autorizações antigas</div></div>
+        <div class="job-pill"><div class="job-name">WebhookRetryJob</div><div class="job-detail">Reprocessa webhooks falhos</div></div>
+        <div class="job-pill"><div class="job-name">BusinessConfigRefreshJob</div><div class="job-detail">Refresh de cache a cada 5min</div></div>
+        <div class="job-pill"><div class="job-name">AuditCleanupJob</div><div class="job-detail">Arquiva audit logs (semanal)</div></div>
+      </div>
+    </div>
+
+    <!-- Azure Services -->
+    <div class="group group-cloud mb-6">
+      <div class="group-title gt-cloud">Serviços Azure de Suporte</div>
+      <div class="service-grid">
+        <div class="service-card">
+          <img src="icons/Key-Vaults.svg">
+          <div class="service-name">Key Vault</div>
+          <div class="service-detail">Todos os secrets<br/>MerchantKey · JWT<br/>Zero em código<br/><span style="color:#86efac;font-size:10px;">PCI DSS ✓</span></div>
+        </div>
+        <div class="service-card">
+          <img src="icons/SQL-Database.svg">
+          <div class="service-name">Azure SQL</div>
+          <div class="service-detail">Standard Tier<br/>EF Core 9<br/>Managed Identity<br/>EnableRetryOnFailure</div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Container-Registries.svg">
+          <div class="service-name">Container Registry</div>
+          <div class="service-detail">newdbs.azurecr.io<br/>Vuln. scan automático<br/>Semantic versioning<br/>4 imagens</div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Application-Insights.svg">
+          <div class="service-name">App Insights</div>
+          <div class="service-detail">Traces + Metrics<br/>Correlation ID<br/>Alertas automáticos<br/>Request/dependency map</div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Monitor.svg">
+          <div class="service-name">Azure Monitor</div>
+          <div class="service-detail">Log Analytics<br/>Dashboards<br/>Anomaly detection<br/>Alert rules</div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Identity-Governance.svg">
+          <div class="service-name">Managed Identity</div>
+          <div class="service-detail">User-Assigned<br/>Key Vault + ACR<br/>SQL sem senha<br/><span style="color:#86efac;font-size:10px;">Zero credentials ✓</span></div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Storage-Accounts.svg">
+          <div class="service-name">Azure Storage</div>
+          <div class="service-detail">Blob exports<br/>ACSEL · ELITA<br/>Arquivos gerados<br/>Retenção LGPD</div>
+        </div>
+        <div class="service-card">
+          <img src="icons/Security-Center.svg">
+          <div class="service-name">Security Center</div>
+          <div class="service-detail">Defender for Cloud<br/>Recomendações IaC<br/>Compliance dashboard<br/>PCI DSS baseline</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- External integrations (modernized) -->
+    <div class="group group-cloud">
+      <div class="group-title gt-cloud">Integrações Externas — Modernizadas</div>
+      <div class="nodes mb-6">
+        <div class="node node-green">
+          <div class="node-icon-placeholder" style="background:rgba(16,124,16,0.12);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#86efac" stroke-width="1.5"><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+          </div>
+          <span class="node-name">Braspag REST</span>
+          <span class="node-sub">*.braspag.com.br<br/>POST /v2/sales<br/>Polly v8 retry+CB</span>
+          <span class="node-badge badge-msi">REST</span>
+        </div>
+        <div class="node node-cloud">
+          <div class="node-icon-placeholder" style="background:rgba(0,120,212,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#93c5fd" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <span class="node-name">Okta OIDC</span>
+          <span class="node-sub">OAuth2/PKCE<br/>JWT RS256 · MFA<br/>App-to-app + SSO</span>
+          <span class="node-badge badge-msi">SSO</span>
+        </div>
+        <div class="node node-green">
+          <div class="node-icon-placeholder" style="background:rgba(16,124,16,0.1);">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#86efac" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="node-name">ACSEL / ELITA</span>
+          <span class="node-sub">Formato preservado<br/>120-char posicional<br/>CSV pipe delimiter</span>
+          <span class="node-badge badge-msi">Compat.</span>
+        </div>
+      </div>
+      <div class="tags">
+        <span class="tag-fix">✓ AES-GCM IV aleatório via Key Vault</span>
+        <span class="tag-fix">✓ JWT RS256 via Okta — sem secret em código</span>
+        <span class="tag-fix">✓ BCrypt cost 12 para senhas</span>
+        <span class="tag-fix">✓ PAN nunca persiste (Cielo.js SAQ A-EP)</span>
+        <span class="tag-fix">✓ TLS 1.2+ obrigatório no ingress</span>
+        <span class="tag-fix">✓ CSP + HSTS + CORS allowlist</span>
+        <span class="tag-fix">✓ Rate limiting: 4 políticas</span>
+        <span class="tag-fix">✓ SSRF prevention: URLs fixas</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  03 — ENDPOINT STRATEGY SOAP + REST      ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">03 — Estratégia de Endpoints · Compatibilidade + Modernidade</div>
+
+  <div class="ep-compare">
+    <div class="ep-col">
+      <h3 style="color:#fcd34d; margin-bottom:16px;">Antes — SOAP único e acoplado</h3>
+      <div class="ep-card ep-legacy-card">
+        <div class="ep-title">dbs-ws (CXF 2.7.17)</div>
+        <div class="ep-body">Único endpoint · /dbs · 7 @WebMethod<br/>SOAP/WS-Security com senha hardcoded<br/>Tudo no mesmo processo JBoss<br/>Sem REST · Sem OAuth · Sem retry</div>
+      </div>
+      <div class="ep-card ep-legacy-card">
+        <div class="ep-title">BillingServiceBean</div>
+        <div class="ep-body">JNDI lookup direto<br/>4.700+ linhas de lógica<br/>~300 stubs SOAP para Braspag<br/>BMT manual · sem circuit breaker</div>
+      </div>
+      <div class="ep-card ep-legacy-card">
+        <div class="ep-title">Braspag SOAP Outbound</div>
+        <div class="ep-body">PagadorTransaction · PagadorQuery<br/>CartãoProtegido · ReconciliationFiles<br/>~300 classes geradas por wsimport<br/>Endpoints *.pagador.com.br descontinuados</div>
+      </div>
+    </div>
+
+    <div class="ep-vs">
+      <div style="flex:1;width:1px;background:rgba(255,255,255,0.05);"></div>
+      <div class="ep-vs-circle">VS</div>
+      <div style="flex:1;width:1px;background:rgba(255,255,255,0.05);"></div>
+    </div>
+
+    <div class="ep-col">
+      <h3 style="color:#93c5fd; margin-bottom:16px;">Depois — SOAP + REST · containers isolados</h3>
+      <div class="ep-card ep-cloud-card">
+        <div class="ep-title">SOAP Adapter (CoreWCF) — Container próprio</div>
+        <div class="ep-body">Preserva WSDL original — parceiros sem alteração<br/>WS-Security: senha no Key Vault (não no código)<br/>Delega 100% para Application Layer compartilhada<br/>Deployável e escalável independentemente</div>
+      </div>
+      <div class="ep-card ep-cloud-card">
+        <div class="ep-title">REST API (ASP.NET Core) — Novos parceiros</div>
+        <div class="ep-body">Bearer JWT RS256 via Okta · HTTPS obrigatório<br/>OpenAPI / Swagger documentado<br/>Rate limiting · CORS allowlist · HSTS<br/>Mesma Application Layer do SOAP Adapter</div>
+      </div>
+      <div class="ep-card ep-cloud-card">
+        <div class="ep-title">Braspag REST Outbound</div>
+        <div class="ep-body">POST /v2/sales · PUT /void · PUT /refund<br/>~20 DTOs (records) · substitui ~300 stubs<br/>Polly v8: retry exponencial + circuit breaker<br/>MerchantKey no Key Vault · nunca logado</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ep-sunset">
+    <strong>Plano de Sunset do SOAP Adapter:</strong> parceiros notificados no início da migração com 12+ meses de antecedência para migrar para REST. O SOAP Adapter permanece em operação como container isolado até migração completa de todos os parceiros. A decisão de sunset é controlada por feature flag na configuração da aplicação — sem redeploy.
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  04 — CLEAN ARCHITECTURE 5 CAMADAS       ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">04 — Clean Architecture · 5 Camadas · Dependências sempre para dentro</div>
+  <div class="layer-row">
+    <div class="layer" style="background:rgba(0,120,212,0.18);">
+      <div class="layer-num" style="color:#60a5fa;">CAMADA 1</div>
+      <div class="layer-name" style="color:#93c5fd;">Domain</div>
+      <div class="layer-items" style="color:#475569;">26 Entities<br/>19 Enums<br/>Value Objects<br/>IPaymentGateway<br/>IPaymentRepository<br/><span style="color:#60a5fa;font-weight:700;">Zero deps externas</span></div>
+    </div>
+    <div class="layer" style="background:rgba(0,120,212,0.12);">
+      <div class="layer-num" style="color:#60a5fa;">CAMADA 2</div>
+      <div class="layer-name" style="color:#93c5fd;">Application</div>
+      <div class="layer-items" style="color:#475569;">Use Case Handlers<br/>MediatR Commands<br/>FluentValidation<br/>DTO Mappings<br/><span style="color:#60a5fa;font-weight:700;">Só depende de Domain</span></div>
+    </div>
+    <div class="layer" style="background:rgba(0,120,212,0.08);">
+      <div class="layer-num" style="color:#60a5fa;">CAMADA 3</div>
+      <div class="layer-name" style="color:#93c5fd;">Infrastructure</div>
+      <div class="layer-items" style="color:#475569;">EF Core Repos<br/>CieloGatewayClient<br/>Resilience Pipelines<br/>Quartz Jobs<br/><span style="color:#60a5fa;font-weight:700;">Implementa portas</span></div>
+    </div>
+    <div class="layer" style="background:rgba(0,120,212,0.05);">
+      <div class="layer-num" style="color:#60a5fa;">CAMADA 4</div>
+      <div class="layer-name" style="color:#93c5fd;">Contracts</div>
+      <div class="layer-items" style="color:#475569;">Request DTOs<br/>Response DTOs<br/>Constants<br/><span style="color:#60a5fa;font-weight:700;">Sem dependências</span></div>
+    </div>
+    <div class="layer" style="background:rgba(0,120,212,0.03);">
+      <div class="layer-num" style="color:#60a5fa;">CAMADA 5</div>
+      <div class="layer-name" style="color:#93c5fd;">API</div>
+      <div class="layer-items" style="color:#475569;">14 Controllers<br/>Middlewares<br/>Health Checks<br/>DI Registration<br/><span style="color:#60a5fa;font-weight:700;">Entry point</span></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:10px;font-family:'Courier New',monospace;font-size:10px;color:#1e3a5f;letter-spacing:2px;">
+    ← DEPENDÊNCIAS APONTAM PARA DENTRO · DOMAIN É INDEPENDENTE DE TUDO →
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  05 — IaC BICEP                           ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">05 — Infrastructure as Code · Bicep · Toda infra versionada no Git</div>
+
+  <div class="iac-box">
+    <div class="iac-title">// 12 módulos Bicep — infra completa como código, PR como a aplicação</div>
+    <div class="iac-files">
+      <span class="iac-file">infra/main.bicep</span>
+      <span class="iac-file">managed-identity.bicep</span>
+      <span class="iac-file">container-apps-env.bicep</span>
+      <span class="iac-file">container-registry.bicep</span>
+      <span class="iac-file">sql-server.bicep</span>
+      <span class="iac-file">key-vault.bicep</span>
+      <span class="iac-file">payment-api.bicep</span>
+      <span class="iac-file">admin-api.bicep</span>
+      <span class="iac-file">web.bicep</span>
+      <span class="iac-file">soap-adapter.bicep</span>
+      <span class="iac-file">parameters/prod.bicepparam</span>
+      <span class="iac-file">parameters/staging.bicepparam</span>
+    </div>
+    <div class="iac-cmd">
+      <span class="prompt">$</span> az deployment group create \<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;--resource-group rg-dbs-prod \<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;--template-file infra/main.bicep \<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;--parameters @infra/parameters/prod.bicepparam
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════╗ -->
+<!-- ║  06 — DEVOPS PIPELINE + GIT              ║ -->
+<!-- ╚══════════════════════════════════════════╝ -->
+<div class="section">
+  <div class="section-rule">06 — Esteira DevOps · GitHub Actions · Git no Circuito Completo</div>
+
+  <div class="pipeline-wrap">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div>
+        <h3 style="margin-bottom:4px;">GitHub Actions CI/CD</h3>
+        <p>Trigger: push para qualquer branch · branch strategy: feature/* → PR → develop (staging auto) → main (prod gate manual)</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <span class="pb-badge pb-oidc" style="display:inline-block;padding:4px 10px;border-radius:3px;font-size:10px;font-family:'Courier New',monospace;background:rgba(139,92,246,0.12);color:#c4b5fd;border:1px solid rgba(139,92,246,0.25);">OIDC Federated — sem service principal armazenado</span>
+        <span class="pb-badge pb-gate" style="display:inline-block;padding:4px 10px;border-radius:3px;font-size:10px;font-family:'Courier New',monospace;background:rgba(16,124,16,0.12);color:#86efac;border:1px solid rgba(16,124,16,0.25);">Approval Gate → produção</span>
+      </div>
+    </div>
+
+    <div class="pipeline-flow">
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/devops-git-client.svg"></div>
+        <div class="pipe-stage-name">Developer<br/>+ Git</div>
+        <ul class="pipe-steps">
+          <li>git commit + push</li>
+          <li>branch feature/*</li>
+          <li>Pull Request → develop</li>
+          <li>Code Review obrigatório</li>
+          <li>Conventional Commits</li>
+        </ul>
+        <span class="pipe-badge pb-trigger">TRIGGER</span>
+        <div class="pipe-connector">›</div>
+      </div>
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/github-icon-white.svg" style="width:30px;height:30px;"></div>
+        <div class="pipe-stage-name">Build<br/>GitHub Actions</div>
+        <ul class="pipe-steps">
+          <li>dotnet restore + build</li>
+          <li>npm ci + build portal</li>
+          <li>Lint + TypeScript check</li>
+          <li>CodeQL SAST scan</li>
+          <li>gitleaks (secrets)</li>
+        </ul>
+        <span class="pipe-badge pb-auto">AUTO</span>
+        <div class="pipe-connector">›</div>
+      </div>
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/devops-test.svg"></div>
+        <div class="pipe-stage-name">Testes +<br/>Coverage</div>
+        <ul class="pipe-steps">
+          <li>dotnet test (191 testes)</li>
+          <li>xUnit + Moq + FluentAssert</li>
+          <li>Testcontainers SQL Server</li>
+          <li>Coverage gate ≥ 80%</li>
+          <li>OWASP dep-check</li>
+        </ul>
+        <span class="pipe-badge pb-auto">AUTO · GATE ≥80%</span>
+        <div class="pipe-connector">›</div>
+      </div>
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/docker.svg"></div>
+        <div class="pipe-stage-name">Docker Build<br/>→ ACR Push</div>
+        <ul class="pipe-steps">
+          <li>docker build multi-stage</li>
+          <li>Tag: sha + semver</li>
+          <li>az acr login (OIDC)</li>
+          <li>docker push 4 imagens</li>
+          <li>ACR vuln scan auto</li>
+        </ul>
+        <span class="pipe-badge pb-oidc">OIDC — sem token</span>
+        <div class="pipe-connector">›</div>
+      </div>
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/azure-resource-manager.svg"></div>
+        <div class="pipe-stage-name">Bicep IaC<br/>+ Migrations</div>
+        <ul class="pipe-steps">
+          <li>az deployment (what-if)</li>
+          <li>Bicep apply infra</li>
+          <li>EF Core migration job</li>
+          <li>Key Vault secrets sync</li>
+          <li>Managed Identity assign</li>
+        </ul>
+        <span class="pipe-badge pb-oidc">OIDC workload</span>
+        <div class="pipe-connector">›</div>
+      </div>
+
+      <div class="pipe-stage">
+        <div class="pipe-icon-wrap"><img src="icons/devops-deploy-cloud.svg"></div>
+        <div class="pipe-stage-name">Deploy<br/>Staging</div>
+        <ul class="pipe-steps">
+          <li>az containerapp update</li>
+          <li>Blue/green revisions</li>
+          <li>Health probe validation</li>
+          <li>Smoke tests automáticos</li>
+          <li>App Insights alertas</li>
+        </ul>
+        <span class="pipe-badge pb-auto">AUTO → develop</span>
+        <div class="pipe-connector" style="color:#107c10;">›</div>
+      </div>
+
+      <div class="pipe-stage" style="border-left:1px solid rgba(16,124,16,0.3);">
+        <div class="pipe-icon-wrap"><img src="icons/Container-Instances.svg"></div>
+        <div class="pipe-stage-name">Deploy<br/>Produção</div>
+        <ul class="pipe-steps">
+          <li>🔒 Aprovação manual</li>
+          <li>az containerapp update</li>
+          <li>Revision weight 10→100%</li>
+          <li>Rollback &lt;5min se falha</li>
+          <li>Deploy total &lt;5min</li>
+        </ul>
+        <span class="pipe-badge pb-gate">MANUAL GATE</span>
+      </div>
+
+    </div><!-- /pipeline-flow -->
+
+    <!-- Branch strategy -->
+    <div class="branch-row">
+      <div class="branch-card" style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.12);">
+        <div style="font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:#f59e0b;margin-bottom:6px;">feature/* branches</div>
+        <p style="font-size:11px;">Build + Test + SAST apenas. Sem deploy automático. Pull Request obrigatório para merge em develop. ACR tag: <code style="color:#fde68a;">sha-{commit}</code></p>
+      </div>
+      <div class="branch-card" style="background:rgba(0,120,212,0.05);border:1px solid rgba(0,120,212,0.12);">
+        <div style="font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:#60a5fa;margin-bottom:6px;">develop → staging</div>
+        <p style="font-size:11px;">Pipeline completo automático. Deploy em staging após todos os gates passarem. ACR tag: <code style="color:#93c5fd;">sha-{commit}</code></p>
+      </div>
+      <div class="branch-card" style="background:rgba(16,124,16,0.05);border:1px solid rgba(16,124,16,0.12);">
+        <div style="font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:#4ade80;margin-bottom:6px;">main → produção</div>
+        <p style="font-size:11px;">Aprovação manual. Blue/green via Container Apps revisions. Rollback sem redeployment. ACR tag: <code style="color:#86efac;">v{major}.{minor}.{patch}</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const s = document.createElement('script');
+s.src = '/helper.js';
+document.head.appendChild(s);
+</script>
+</body>
+</html>

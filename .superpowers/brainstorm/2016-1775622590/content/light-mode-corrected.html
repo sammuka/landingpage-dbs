@@ -1,0 +1,164 @@
+<h2>Light Mode — com gradientes atmosféricos</h2>
+<p class="subtitle">Mesmos glows do dark mode, adaptados para fundo claro. Confirme antes de avançar para a estrutura da página.</p>
+
+<div style="display:flex;gap:16px;margin-bottom:24px;">
+
+  <!-- DARK reference -->
+  <div style="flex:1;">
+    <div class="label" style="margin-bottom:6px;">DARK (referência)</div>
+    <div style="background:#060c18; border-radius:8px; padding:20px; border:1px solid rgba(255,255,255,0.07); position:relative; overflow:hidden; min-height:420px;">
+      <div style="position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:radial-gradient(circle,rgba(0,120,212,0.22) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-40px;left:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(16,124,16,0.15) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;top:40%;left:30%;width:300px;height:200px;background:radial-gradient(ellipse,rgba(0,120,212,0.07) 0%,transparent 60%);pointer-events:none;"></div>
+
+      <div style="font-family:'Courier New',monospace;font-size:9px;color:#0078d4;letter-spacing:3px;margin-bottom:14px;">ASSURANT · DBS</div>
+      <div style="font-family:Georgia,serif;font-size:22px;font-weight:800;color:#f1f5f9;line-height:1.2;margin-bottom:10px;">
+        De um monolito com<br/>
+        <span style="color:#ef4444;text-decoration:line-through;opacity:0.65;">42 dívidas técnicas</span><br/>
+        para <span style="color:#0078d4;">cloud-native</span>
+      </div>
+      <p style="font-size:11px;color:#64748b;line-height:1.7;margin-bottom:18px;max-width:280px;">Reescrita completa do DBS em .NET 9, Next.js e Azure Container Apps.</p>
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <div style="background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.3);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#60a5fa;font-family:'Courier New',monospace;">191</div>
+          <div style="font-size:8px;color:#475569;text-transform:uppercase;">Testes</div>
+        </div>
+        <div style="background:rgba(16,124,16,0.12);border:1px solid rgba(16,124,16,0.28);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#4ade80;font-family:'Courier New',monospace;">0</div>
+          <div style="font-size:8px;color:#475569;text-transform:uppercase;">CVEs</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#e2e8f0;font-family:'Courier New',monospace;">4</div>
+          <div style="font-size:8px;color:#475569;text-transform:uppercase;">Containers</div>
+        </div>
+      </div>
+      <!-- Architecture mini-preview -->
+      <div style="border:1px solid rgba(0,120,212,0.2);border-radius:6px;padding:10px;background:rgba(0,120,212,0.05);">
+        <div style="font-size:8px;color:#475569;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:6px;">CLEAN ARCHITECTURE</div>
+        <div style="display:flex;gap:4px;">
+          <div style="background:rgba(0,120,212,0.2);border:1px solid rgba(0,120,212,0.35);border-radius:3px;padding:3px 6px;font-size:8px;color:#93c5fd;">Domain</div>
+          <div style="font-size:8px;color:#334155;margin-top:3px;">→</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:3px 6px;font-size:8px;color:#94a3b8;">Application</div>
+          <div style="font-size:8px;color:#334155;margin-top:3px;">→</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:3px 6px;font-size:8px;color:#94a3b8;">Infra</div>
+          <div style="font-size:8px;color:#334155;margin-top:3px;">→</div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:3px 6px;font-size:8px;color:#94a3b8;">API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHT corrected -->
+  <div style="flex:1;">
+    <div class="label" style="margin-bottom:6px; color:#0078d4;">LIGHT — com gradientes (corrigido)</div>
+    <div style="background:linear-gradient(135deg, #f0f6ff 0%, #f8fafc 40%, #f0fdf4 100%); border-radius:8px; padding:20px; border:1px solid #dde8f5; position:relative; overflow:hidden; min-height:420px;">
+
+      <!-- Glows — mesma lógica do dark, mas mais suaves e em tons de tinta sobre papel -->
+      <div style="position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:radial-gradient(circle,rgba(0,120,212,0.12) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-40px;left:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(16,124,16,0.09) 0%,transparent 65%);pointer-events:none;"></div>
+      <div style="position:absolute;top:40%;left:30%;width:300px;height:200px;background:radial-gradient(ellipse,rgba(0,120,212,0.05) 0%,transparent 60%);pointer-events:none;"></div>
+      <!-- Linha de gradiente no topo -->
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#0078d4 0%,rgba(0,120,212,0.3) 50%,#107c10 100%);"></div>
+
+      <div style="font-family:'Courier New',monospace;font-size:9px;color:#0078d4;letter-spacing:3px;margin-bottom:14px;margin-top:6px;">ASSURANT · DBS</div>
+      <div style="font-family:Georgia,serif;font-size:22px;font-weight:800;color:#0f172a;line-height:1.2;margin-bottom:10px;">
+        De um monolito com<br/>
+        <span style="color:#dc2626;text-decoration:line-through;opacity:0.6;">42 dívidas técnicas</span><br/>
+        para <span style="color:#0078d4;">cloud-native</span>
+      </div>
+      <p style="font-size:11px;color:#64748b;line-height:1.7;margin-bottom:18px;max-width:280px;">Reescrita completa do DBS em .NET 9, Next.js e Azure Container Apps.</p>
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <div style="background:rgba(0,120,212,0.08);border:1px solid rgba(0,120,212,0.22);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#1d4ed8;font-family:'Courier New',monospace;">191</div>
+          <div style="font-size:8px;color:#94a3b8;text-transform:uppercase;">Testes</div>
+        </div>
+        <div style="background:rgba(16,124,16,0.07);border:1px solid rgba(16,124,16,0.2);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#15803d;font-family:'Courier New',monospace;">0</div>
+          <div style="font-size:8px;color:#94a3b8;text-transform:uppercase;">CVEs</div>
+        </div>
+        <div style="background:rgba(15,23,42,0.04);border:1px solid rgba(15,23,42,0.1);border-radius:5px;padding:8px 12px;text-align:center;flex:1;">
+          <div style="font-size:18px;font-weight:700;color:#1e293b;font-family:'Courier New',monospace;">4</div>
+          <div style="font-size:8px;color:#94a3b8;text-transform:uppercase;">Containers</div>
+        </div>
+      </div>
+      <!-- Architecture mini-preview -->
+      <div style="border:1px solid rgba(0,120,212,0.15);border-radius:6px;padding:10px;background:rgba(0,120,212,0.04);">
+        <div style="font-size:8px;color:#94a3b8;font-family:'Courier New',monospace;letter-spacing:2px;margin-bottom:6px;">CLEAN ARCHITECTURE</div>
+        <div style="display:flex;gap:4px;">
+          <div style="background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.25);border-radius:3px;padding:3px 6px;font-size:8px;color:#1d4ed8;">Domain</div>
+          <div style="font-size:8px;color:#cbd5e1;margin-top:3px;">→</div>
+          <div style="background:rgba(15,23,42,0.04);border:1px solid #e2e8f0;border-radius:3px;padding:3px 6px;font-size:8px;color:#475569;">Application</div>
+          <div style="font-size:8px;color:#cbd5e1;margin-top:3px;">→</div>
+          <div style="background:rgba(15,23,42,0.04);border:1px solid #e2e8f0;border-radius:3px;padding:3px 6px;font-size:8px;color:#475569;">Infra</div>
+          <div style="font-size:8px;color:#cbd5e1;margin-top:3px;">→</div>
+          <div style="background:rgba(15,23,42,0.04);border:1px solid #e2e8f0;border-radius:3px;padding:3px 6px;font-size:8px;color:#475569;">API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE LENGTH NOTE -->
+<div style="background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.08);border-radius:8px;padding:18px 20px;margin-bottom:16px;">
+  <div class="label" style="margin-bottom:10px;">Estrutura da Página — Densidade Planejada</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px;">
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">01</span>
+      <div><strong>Hero</strong> — abertura impactante, animated counter</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">02</span>
+      <div><strong>Mapa ANTES</strong> — 7 módulos Java, SOAP, JBoss (interativo, acoplamento visível)</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">03</span>
+      <div><strong>Mapa DEPOIS</strong> — Azure Container Apps, Key Vault, Okta (com ícones oficiais Azure)</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#d83b01;font-weight:700;min-width:20px;">04</span>
+      <div><strong>Telas ANTES vs DEPOIS</strong> — Struts JSP vs shadcn/ui, simulação fidedigna</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">05</span>
+      <div><strong>Stack Comparativo</strong> — tabela 20+ linhas (linguagem, ORM, jobs, logging…)</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#d83b01;font-weight:700;min-width:20px;">06</span>
+      <div><strong>9 Vulnerabilidades</strong> — AES IV fixo, JWT hardcoded, MD5, PAN em logs… → solução</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">07</span>
+      <div><strong>Modelo de Integração</strong> — SOAP/WS-Security → REST/JWT/Okta</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">08</span>
+      <div><strong>Métricas Animadas</strong> — counters: 1.073 classes, 42 dívidas, 0 testes → 191…</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">09</span>
+      <div><strong>Timeline</strong> — 20 sprints, fases M1–M5, horizontal ↔ vertical mobile</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;">
+      <span style="color:#0078d4;font-weight:700;min-width:20px;">10</span>
+      <div><strong>ADRs Chave</strong> — 8 decisões arquiteturais (cards com contexto + decisão + consequência)</div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="approved" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Aprovado — light mode com gradientes</h3>
+      <p>Prosseguir para próxima pergunta: como apresentar os mapas arquiteturais interativos</p>
+    </div>
+  </div>
+  <div class="option" data-choice="adjust" onclick="toggleSelect(this)">
+    <div class="letter">~</div>
+    <div class="content">
+      <h3>Ajustar — descreva o que mudar</h3>
+      <p>Intensidade dos glows, temperatura de cor, outra preferência</p>
+    </div>
+  </div>
+</div>
