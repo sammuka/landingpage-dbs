@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useInView, animate } from "framer-motion";
+import { useInView } from "framer-motion";
 
 interface AnimatedCounterProps {
   from: number;
@@ -11,6 +11,11 @@ interface AnimatedCounterProps {
   suffix?: string;
   decimals?: number;
   className?: string;
+}
+
+// easeOutQuart: fast start, gentle deceleration
+function easeOutQuart(t: number): number {
+  return 1 - Math.pow(1 - t, 4);
 }
 
 export function AnimatedCounter({
@@ -33,24 +38,33 @@ export function AnimatedCounter({
 
     const node = ref.current;
     const fmt = (v: number) => prefix + v.toFixed(decimals) + suffix;
+    const durationMs = duration * 1000;
+    const startTime = performance.now();
+    let rafId: number;
 
-    const controls = animate(from, to, {
-      duration,
-      ease: [0.25, 0.46, 0.45, 0.94],
-      onUpdate: (value) => {
-        node.textContent = fmt(value);
-      },
-    });
+    function tick(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const eased = easeOutQuart(progress);
+      const current = from + (to - from) * eased;
+      node.textContent = fmt(current);
+
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      controls.stop();
+      cancelAnimationFrame(rafId);
       // Always show the final value if animation is interrupted
-      // (e.g., by React Strict Mode double-mount or re-render)
       if (node) node.textContent = fmt(to);
     };
   }, [isInView, from, to, duration, prefix, suffix, decimals]);
 
-  // SSR/initial render: always show the final (to) value
+  // SSR/initial render: always show the final (to) value.
+  // The rAF animation overrides textContent when triggered.
   return (
     <span ref={inViewRef}>
       <span ref={ref} className={className}>

@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-playfair);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -18,11 +18,6 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -43,88 +38,257 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* DBS brand tokens */
+  --color-azure-blue: #0078d4;
+  --color-azure-blue-l: #60a5fa;
+  --color-green-ok: #107c10;
+  --color-green-ok-l: #4ade80;
+  --color-amber-warn: #d97706;
+  --color-amber-warn-l: #fcd34d;
+  --color-red-crit: #dc2626;
+  --color-slate-900: #0f172a;
 }
 
+/* ─── Light theme (default :root) ───────────────────────────── */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0078d4;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e0f2fe;
+  --accent-foreground: #0f172a;
+  --destructive: #dc2626;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0078d4;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0078d4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e0f2fe;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0078d4;
 }
 
+/* ─── Dark theme ─────────────────────────────────────────────── */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #060c18;
+  --foreground: #e2e8f0;
+  --card: #0d1526;
+  --card-foreground: #e2e8f0;
+  --popover: #0d1526;
+  --popover-foreground: #e2e8f0;
+  --primary: #60a5fa;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e3a5f;
+  --accent-foreground: #e2e8f0;
+  --destructive: #f87171;
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.10);
+  --ring: #60a5fa;
+  --sidebar: #0d1526;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #60a5fa;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #1e3a5f;
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: rgba(255,255,255,0.08);
+  --sidebar-ring: #60a5fa;
 }
 
+/* ─── Base styles ─────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
-    @apply font-sans;
+    @apply scroll-smooth;
   }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-geist-sans), 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+  code, pre, .font-mono {
+    font-family: var(--font-jetbrains-mono), 'Courier New', monospace;
+  }
+}
+
+/* ─── Dark mode body background with ambient glows ───────────── */
+.dark body {
+  background-color: #060c18;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 80% -10%, rgba(0,120,212,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at -10% 80%, rgba(16,124,16,0.12) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* ─── Light mode body background with ambient glows ─────────── */
+body:not(.dark body) {
+  background: linear-gradient(135deg, #f0f6ff 0%, #f8fafc 40%, #f0fdf4 100%);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 80% -10%, rgba(0,120,212,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at -10% 80%, rgba(16,124,16,0.06) 0%, transparent 60%),
+    linear-gradient(135deg, #f0f6ff 0%, #f8fafc 40%, #f0fdf4 100%);
+  background-attachment: fixed;
+}
+
+/* ─── Metric card accent colors — adapts per mode ────────────── */
+:root {
+  --metric-red:   #c0392b;
+  --metric-green: #16a34a;
+  --metric-blue:  #1d4ed8;
+  --metric-amber: #b45309;
+}
+.dark {
+  --metric-red:   #f87171;
+  --metric-green: #34d399;
+  --metric-blue:  #60a5fa;
+  --metric-amber: #fbbf24;
+}
+
+/* ─── Logo contrast helpers ───────────────────────────────────── */
+.logo-light-fix {
+  filter: brightness(0.55) saturate(1.8);
+}
+.dark .logo-light-fix {
+  filter: none;
+}
+
+/* ─── Utility classes ─────────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-mono-tech {
+  font-family: var(--font-jetbrains-mono), 'Courier New', monospace;
+}
+
+.section-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24;
+}
+
+/* ─── Tag variants — light mode defaults, dark mode overrides ── */
+
+.tag-crit {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(220, 38, 38, 0.10);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.22);
+}
+.dark .tag-crit {
+  background: rgba(127, 29, 29, 0.60);
+  color: #f87171;
+  border-color: rgba(153, 27, 27, 0.40);
+}
+
+.tag-fix {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(16, 124, 16, 0.10);
+  color: #166534;
+  border: 1px solid rgba(16, 124, 16, 0.22);
+}
+.dark .tag-fix {
+  background: rgba(20, 83, 45, 0.60);
+  color: #4ade80;
+  border-color: rgba(22, 101, 52, 0.40);
+}
+
+.tag-neutral {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(100, 116, 139, 0.10);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.22);
+}
+.dark .tag-neutral {
+  background: rgba(30, 41, 59, 0.60);
+  color: #94a3b8;
+  border-color: rgba(51, 65, 85, 0.40);
+}
+
+.tag-amber {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(217, 119, 6, 0.10);
+  color: #92400e;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+}
+.dark .tag-amber {
+  background: rgba(120, 53, 15, 0.60);
+  color: #fcd34d;
+  border-color: rgba(146, 64, 14, 0.40);
+}
+
+.tag-blue {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  background: rgba(0, 120, 212, 0.10);
+  color: #1e40af;
+  border: 1px solid rgba(0, 120, 212, 0.22);
+}
+.dark .tag-blue {
+  background: rgba(30, 58, 138, 0.60);
+  color: #60a5fa;
+  border-color: rgba(30, 64, 175, 0.40);
+}
+
+/* ─── Section divider glow line ─────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,120,212,0.4), rgba(16,124,16,0.3), transparent);
+  margin: 0;
+}
+
+/* ─── Code block style ───────────────────────────────────────── */
+.code-block {
+  @apply rounded-lg p-4 text-sm overflow-x-auto;
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.08);
+  color: #1e293b;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.dark .code-block {
+  background: rgba(0,0,0,0.4);
+  border-color: rgba(255,255,255,0.08);
+  color: #e2e8f0;
+}
+
+/* ─── React Flow overrides ───────────────────────────────────── */
+.react-flow__background {
+  background: transparent !important;
+}
+
+.react-flow__attribution {
+  display: none !important;
+}
+
+/* ─── Scrollbar dark ─────────────────────────────────────────── */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
 }
