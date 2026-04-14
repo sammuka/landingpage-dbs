@@ -271,6 +271,14 @@ body:not(.dark body) {
   color: #e2e8f0;
 }
 
+/* ─── Geometric background: orbs ────────────────────────────── */
+.orb-container {
+  transition: opacity 0.3s ease;
+}
+:root .orb-container {
+  opacity: 0.18;
+}
+
 /* ─── React Flow overrides ───────────────────────────────────── */
 .react-flow__background {
   background: transparent !important;

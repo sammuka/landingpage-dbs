@@ -11,10 +11,16 @@ import { MetricsAnimated } from "@/components/sections/MetricsAnimated";
 import { DevOpsPipeline } from "@/components/sections/DevOpsPipeline";
 import { ADRCards } from "@/components/sections/ADRCards";
 import { Footer } from "@/components/sections/Footer";
+import { ParticlesBackground } from "@/components/ui/ParticlesBackground";
+import { Orbs } from "@/components/ui/Orbs";
+import { GrainOverlay } from "@/components/ui/GrainOverlay";
 
 export default function Home() {
   return (
     <>
+      <ParticlesBackground />
+      <Orbs />
+      <GrainOverlay />
       <Navbar />
       <main className="min-h-screen">
         <Hero />

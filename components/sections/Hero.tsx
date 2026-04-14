@@ -66,33 +66,6 @@ const metrics: MetricCard[] = [
   },
 ];
 
-// ─── Noise overlay ─────────────────────────────────────────────────────────
-
-function NoiseOverlay() {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 opacity-[0.035]"
-    >
-      <svg
-        className="absolute inset-0 w-full h-full"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <filter id="hero-noise">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.65"
-            numOctaves="3"
-            stitchTiles="stitch"
-          />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#hero-noise)" />
-      </svg>
-    </div>
-  );
-}
-
 // ─── Ease helpers (Framer Motion v12 compatible) ───────────────────────────
 // We use inline transition objects instead of shared variant factories
 // to avoid TargetResolver type constraints.
@@ -113,8 +86,6 @@ export function Hero() {
       id="hero"
       className="relative min-h-screen flex items-center overflow-hidden pt-24"
     >
-      <NoiseOverlay />
-
       {/* Radial accent glow */}
       <div
         aria-hidden="true"
