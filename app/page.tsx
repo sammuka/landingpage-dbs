@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { JourneyTimeline } from "@/components/sections/JourneyTimeline";
+import { DiscoverySprint } from "@/components/sections/DiscoverySprint";
 import { ArchitectureMaps } from "@/components/sections/ArchitectureMaps";
 import { EndpointStrategy } from "@/components/sections/EndpointStrategy";
 import { UIComparison } from "@/components/sections/UIComparison";
@@ -26,6 +27,8 @@ export default function Home() {
         <Hero />
         <div className="section-divider" />
         <JourneyTimeline />
+        <div className="section-divider" />
+        <DiscoverySprint />
         <div className="section-divider" />
         <ArchitectureMaps />
         <div className="section-divider" />
