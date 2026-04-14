@@ -8,12 +8,13 @@ import {
   type SprintDay,
   type SprintEvent,
   type SprintBadge,
+  type SprintEventCategory,
 } from "@/lib/data/sprint";
 
 // ─── Ease constants ──────────────────────────────────────────────────────────
 
-const EASE_SPRING = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
-const EASE_STD    = [0.4, 0, 0.2, 1] as [number, number, number, number];
+const EASE_SPRING   = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
+const EASE_STANDARD = [0.4, 0, 0.2, 1] as [number, number, number, number];
 
 // ─── Animation variants ──────────────────────────────────────────────────────
 
@@ -28,12 +29,12 @@ const fadeUp: Variants = {
 
 const lineGrow: Variants = {
   hidden:   { scaleY: 0 },
-  visible:  { scaleY: 1, transition: { duration: 1.0, ease: EASE_STD, delay: 0.1 } },
+  visible:  { scaleY: 1, transition: { duration: 1.0, ease: EASE_STANDARD, delay: 0.1 } },
 };
 
 // ─── Category metadata ───────────────────────────────────────────────────────
 
-const CAT_COLOR: Record<string, string> = {
+const CAT_COLOR: Record<SprintEventCategory, string> = {
   discovery:  "#d97706",
   docbuild:   "#7c3aed",
   decision:   "#0078d4",
@@ -43,7 +44,7 @@ const CAT_COLOR: Record<string, string> = {
   validation: "#0891b2",
 };
 
-const CAT_LABEL: Record<string, string> = {
+const CAT_LABEL: Record<SprintEventCategory, string> = {
   discovery:  "Engenharia Reversa",
   docbuild:   "Doc construída",
   decision:   "Decisão",
@@ -70,15 +71,15 @@ function BadgePill({ badge }: { badge: SprintBadge }) {
   );
 }
 
-function CatTag({ category }: { category: string }) {
-  const color = CAT_COLOR[category] ?? "#64748b";
+function CatTag({ category }: { category: SprintEventCategory }) {
+  const color = CAT_COLOR[category];
   return (
     <span
       className="inline-flex items-center gap-1 text-[10px] font-mono-tech uppercase tracking-wider"
       style={{ color }}
     >
       <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ background: color }} />
-      {CAT_LABEL[category] ?? category}
+      {CAT_LABEL[category]}
     </span>
   );
 }
@@ -268,6 +269,7 @@ function TeamCallout({ isInView }: { isInView: boolean }) {
       />
       <div className="relative flex flex-col sm:flex-row sm:items-start gap-3">
         <div
+          aria-hidden="true"
           className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold"
           style={{ background: "#7c3aed18", color: "#7c3aed", border: "1px solid #7c3aed33" }}
         >
@@ -387,9 +389,11 @@ function ForkCallout({ isInView }: { isInView: boolean }) {
 export function DiscoverySprint() {
   const headingRef = useRef<HTMLDivElement>(null);
   const bodyRef    = useRef<HTMLDivElement>(null);
+  const gridRef    = useRef<HTMLDivElement>(null);
   const mobileRef  = useRef<HTMLDivElement>(null);
   const isHeadingInView = useInView(headingRef, { once: true, margin: "-50px" });
   const isBodyInView    = useInView(bodyRef,    { once: true, margin: "-60px" });
+  const isGridInView    = useInView(gridRef,    { once: true, margin: "-40px" });
   const isMobileInView  = useInView(mobileRef,  { once: true, margin: "-40px" });
 
   return (
@@ -442,9 +446,9 @@ export function DiscoverySprint() {
         </div>
 
         {/* ── Desktop grid ── */}
-        <div className="hidden lg:grid lg:grid-cols-7 gap-3">
+        <div ref={gridRef} className="hidden lg:grid lg:grid-cols-7 gap-3">
           {sprintDays.map((day, i) => (
-            <DayColumn key={day.id} day={day} index={i + 1} isInView={isBodyInView} />
+            <DayColumn key={day.id} day={day} index={i + 1} isInView={isGridInView} />
           ))}
         </div>
 
