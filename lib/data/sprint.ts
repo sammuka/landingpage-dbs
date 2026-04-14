@@ -171,6 +171,7 @@ export const sprintDays: SprintDay[] = [
   },
 
   // ── FASE 2: DECISÃO + IMPLEMENTAÇÃO (04/04) ──────────────────────────────
+  // day-3 (03/04 Qui) — sem entrada: dia de consolidação interna, sem evento destacável
 
   {
     id: "day-4",
@@ -212,6 +213,7 @@ export const sprintDays: SprintDay[] = [
   },
 
   // ── FASE 3: SEGURANÇA E INFRA (06/04 – 07/04) ────────────────────────────
+  // day-5 (05/04 Dom) — sem entrada: domingo; verificação BIN e ajustes menores sem destaque
 
   {
     id: "day-6",
@@ -274,6 +276,7 @@ export const sprintDays: SprintDay[] = [
   },
 
   // ── FASE 4: VALIDAÇÃO FINAL (10/04) ──────────────────────────────────────
+  // day-8 (08/04 Qua), day-9 (09/04 Qui) — sem entradas: refinamentos de testes sem evento destacável
 
   {
     id: "day-10",
@@ -308,7 +311,21 @@ export const sprintDays: SprintDay[] = [
 
 // ─── Summary counters ────────────────────────────────────────────────────────
 
-export const sprintSummary = {
+export interface SprintSummary {
+  totalDays: number;
+  startDate: string;
+  endDate: string;
+  asIsDocsBuilt: number;
+  adrsCreated: number;
+  csharpFiles: number;
+  tests: number;
+  tasksExecuted: number;
+  pathsDesigned: number;
+  technicalDebts: number;
+  gapsIdentified: number;
+}
+
+export const sprintSummary: SprintSummary = {
   totalDays: 10,
   startDate: "31/03/2026",
   endDate: "10/04/2026",
