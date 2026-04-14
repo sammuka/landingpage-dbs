@@ -277,7 +277,7 @@ function TeamCallout({ isInView }: { isInView: boolean }) {
         </div>
         <div>
           <p className="font-display font-bold text-sm text-foreground mb-1">
-            Documentação construída pela equipe — não recebida
+            Documentação construída pela equipe — com base nos fontes
           </p>
           <p className="text-[12px] text-muted-foreground leading-relaxed">
             O sistema legado não possuía nenhuma documentação, testes ou especificação.
