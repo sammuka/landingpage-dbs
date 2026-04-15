@@ -42,7 +42,9 @@ function ThemedLogo({ company }: ThemedLogoProps) {
       className="object-contain h-7 w-auto transition-all duration-200"
       style={
         isDark
-          ? { filter: "brightness(0) invert(1)" }
+          ? company.logoDark === company.logoLight
+            ? { filter: "brightness(0) invert(1)" }
+            : {}
           : { filter: "brightness(0.45) saturate(1.6)" }
       }
       unoptimized
