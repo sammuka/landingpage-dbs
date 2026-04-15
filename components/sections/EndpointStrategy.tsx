@@ -17,11 +17,11 @@ import {
 type HttpMethod = "POST" | "GET" | "PUT" | "DELETE" | "PATCH";
 
 const methodColors: Record<HttpMethod, string> = {
-  GET: "bg-green-950/60 text-green-400 border-green-800/40",
-  POST: "bg-blue-950/60 text-blue-400 border-blue-800/40",
-  PUT: "bg-amber-950/60 text-amber-400 border-amber-800/40",
-  PATCH: "bg-orange-950/60 text-orange-400 border-orange-800/40",
-  DELETE: "bg-red-950/60 text-red-400 border-red-800/40",
+  GET: "bg-green-100 text-green-700 border-green-300 dark:bg-green-950/60 dark:text-green-400 dark:border-green-800/40",
+  POST: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800/40",
+  PUT: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/40",
+  PATCH: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-950/60 dark:text-orange-400 dark:border-orange-800/40",
+  DELETE: "bg-red-100 text-red-700 border-red-300 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800/40",
 };
 
 function MethodBadge({ method }: { method: HttpMethod }) {
@@ -399,7 +399,7 @@ export function EndpointStrategy() {
 
                     {/* REST path */}
                     <TableCell>
-                      <code className="font-mono-tech text-[12px] text-[var(--color-azure-blue-l)] bg-blue-950/30 dark:bg-blue-950/30 px-1.5 py-0.5 rounded">
+                      <code className="font-mono-tech text-[12px] text-blue-700 dark:text-[var(--color-azure-blue-l)] bg-blue-100 dark:bg-blue-950/30 px-1.5 py-0.5 rounded">
                         {mapping.restPath}
                       </code>
                     </TableCell>
