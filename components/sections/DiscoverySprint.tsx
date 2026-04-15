@@ -107,7 +107,7 @@ function EventCard({ event }: { event: SprintEvent }) {
             <span
               key={m}
               className="font-mono-tech text-[10px] px-1.5 py-0.5 rounded"
-              style={{ background: `${color}11`, color, border: `1px solid ${color}22` }}
+              style={{ background: `${color}22`, color, border: `1px solid ${color}50` }}
             >
               {m}
             </span>
