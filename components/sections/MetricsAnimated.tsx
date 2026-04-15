@@ -17,10 +17,10 @@ interface Metric {
 const metrics: Metric[] = [
   {
     label: "Classes Java → Tipos C#",
-    from: 1133,
+    from: 906,
     to: 383,
     suffix: "",
-    description: "↓ 66% com Clean Architecture",
+    description: "↓ 58% com Clean Architecture",
   },
   {
     label: "Testes Automatizados",
@@ -38,7 +38,7 @@ const metrics: Metric[] = [
   },
   {
     label: "Dívidas Técnicas",
-    from: 48,
+    from: 42,
     to: 0,
     suffix: "",
     description: "Zero críticas abertas",

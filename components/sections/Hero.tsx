@@ -33,8 +33,8 @@ interface MetricCard {
 
 const metrics: MetricCard[] = [
   {
-    fromLabel: "~1.100 classes Java",
-    from: 1100,
+    fromLabel: "906 classes Java",
+    from: 906,
     to: 383,
     suffix: " tipos",
     description: "redução com Clean Arch",
@@ -57,8 +57,8 @@ const metrics: MetricCard[] = [
     accentColor: "var(--metric-blue)",
   },
   {
-    fromLabel: "48 dívidas técnicas",
-    from: 48,
+    fromLabel: "42 dívidas técnicas",
+    from: 42,
     to: 0,
     suffix: " dívidas",
     description: "débito técnico zerado",
@@ -114,7 +114,7 @@ export function Hero() {
               }}
             />
             <SectionLabel className="font-mono-tech text-xs tracking-[0.2em] uppercase">
-              Transformação Tecnológica · 2024–2026
+              Sprint de 10 dias · 31 Mar – 10 Abr 2026
             </SectionLabel>
           </motion.div>
 
@@ -128,7 +128,7 @@ export function Hero() {
             De um monolito com{" "}
             <br className="hidden sm:block" />
             <span className="line-through text-red-500 dark:text-red-400">
-              48 dívidas técnicas
+              42 dívidas técnicas
             </span>
             <br />
             <span className="text-foreground">

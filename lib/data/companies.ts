@@ -39,7 +39,7 @@ export const client = {
 };
 
 export const projectMeta = {
-  startDate: "Q1 2024",
-  endDate: "Q1 2026",
+  startDate: "31 Mar 2026",
+  endDate: "10 Abr 2026",
   team: "Sistran + Lumina AI",
 };

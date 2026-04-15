@@ -76,7 +76,7 @@ interface LegendStat {
 
 const legacyStats: LegendStat[] = [
   { value: "7", label: "módulos Java", variant: "warn" },
-  { value: "~1.100", label: "classes", variant: "warn" },
+  { value: "906", label: "classes", variant: "warn" },
   { value: "9", label: "CVEs críticos", variant: "crit" },
 ];
 

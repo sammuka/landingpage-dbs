@@ -1,5 +1,5 @@
 // ─── Legacy System Data (AS-IS) ──────────────────────────────────
-// Fonte: DBS-FontesHistórico/docs/as-is/ (15 documentos)
+// Fonte: DBS-FontesHistórico/docs/as-is/ (16 documentos)
 
 export interface LegacyModule {
   id: string;
@@ -212,7 +212,7 @@ export const securityVulnerabilities: SecurityVulnerability[] = [
 
 // ─── Métricas AS-IS ───────────────────────────────────────────────
 export const legacyMetrics = {
-  totalClasses: 1133,
+  totalClasses: 906,
   totalLines: 203100,
   testCount: 0,
   testCoverage: 0,

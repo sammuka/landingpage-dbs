@@ -219,7 +219,7 @@ const SUMMARY = [
   { label: "ADRs criados",           value: "21",   color: "#0078d4" },
   { label: "Dívidas mapeadas",       value: "42",   color: "#dc2626" },
   { label: "Gaps identificados",     value: "53",   color: "#d97706" },
-  { label: "Testes (100%)",          value: "191",  color: "#107c10" },
+  { label: "Testes (100%)",          value: "163",  color: "#107c10" },
   { label: "Tasks executadas",       value: "215",  color: "#0891b2" },
 ] as const;
 
@@ -370,7 +370,7 @@ function ForkCallout({ isInView }: { isInView: boolean }) {
               "Managed Identity — sem secrets em código",
               "Okta MFA + App-to-App (ADR-009)",
               "Cielo.js — PAN/CVV nunca chegam ao backend",
-              "191 testes, >80% cobertura",
+              "163 testes, >80% cobertura",
             ].map((t) => (
               <li key={t} className="flex items-start gap-1.5">
                 <span className="shrink-0 mt-[3px] text-[11px]" style={{ color: "#107c10" }}>✓</span>
@@ -417,21 +417,21 @@ export function DiscoverySprint() {
         >
           <SectionLabel>Discovery & Implementação</SectionLabel>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight max-w-3xl mx-auto mb-3">
-            De um sistema{" "}
+            Da{" "}
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(90deg, #dc2626, #d97706)" }}
             >
-              sem documentação
+              engenharia reversa dos fontes
             </span>{" "}
-            a{" "}
+            à{" "}
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(90deg, #0078d4, #107c10)" }}
             >
-              arquitetura cloud-native
-            </span>{" "}
-            em 10 dias
+              implementação cloud-native completa
+            </span>
+            {" "}— Clean Architecture, CI/CD, IaC Bicep e Azure — em 10 dias
           </h2>
           <p className="font-mono-tech text-sm text-muted-foreground tracking-wide">
             31/03/2026 → 10/04/2026 · Engenharia reversa · Dois caminhos projetados · IA como ferramenta · Okta MFA + App-to-App
