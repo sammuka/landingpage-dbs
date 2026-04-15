@@ -40,7 +40,11 @@ function ThemedLogo({ company }: ThemedLogoProps) {
       width={80}
       height={28}
       className="object-contain h-7 w-auto transition-all duration-200"
-      style={!isDark ? { filter: "brightness(0.45) saturate(1.6)" } : {}}
+      style={
+        isDark
+          ? { filter: "brightness(0) invert(1)" }
+          : { filter: "brightness(0.45) saturate(1.6)" }
+      }
       unoptimized
     />
   );
