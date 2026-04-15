@@ -45,7 +45,7 @@ function ArchDiagram() {
           ANTES — SOAP único e acoplado
         </p>
 
-        <div className="rounded-xl border border-red-800/30 bg-red-950/10 p-5 flex flex-col gap-4">
+        <div className="rounded-xl border border-red-300 bg-red-50 dark:border-red-800/30 dark:bg-red-950/10 p-5 flex flex-col gap-4">
           {/* Parceiros node */}
           <div className="flex items-center justify-center">
             <div className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-200 text-center min-w-[120px]">
@@ -64,9 +64,9 @@ function ArchDiagram() {
 
           {/* dbs-ws node */}
           <div className="flex items-center justify-center">
-            <div className="rounded-lg border border-red-700/50 bg-red-950/50 px-4 py-2.5 text-center min-w-[160px]">
-              <div className="text-sm font-semibold text-red-200">dbs-ws</div>
-              <div className="text-[10px] text-red-400 font-mono-tech mt-0.5">Apache CXF 2.7.17</div>
+            <div className="rounded-lg border border-red-400 bg-red-100 dark:border-red-700/50 dark:bg-red-950/50 px-4 py-2.5 text-center min-w-[160px]">
+              <div className="text-sm font-semibold text-red-700 dark:text-red-200">dbs-ws</div>
+              <div className="text-[10px] text-red-500 dark:text-red-400 font-mono-tech mt-0.5">Apache CXF 2.7.17</div>
               <div className="flex items-center justify-center gap-1 mt-2">
                 <Tag variant="crit">~300 stubs</Tag>
               </div>
@@ -83,16 +83,16 @@ function ArchDiagram() {
 
           {/* Oracle — tudo acoplado */}
           <div className="flex items-center justify-center">
-            <div className="rounded-lg border border-amber-700/40 bg-amber-950/30 px-4 py-2 text-sm text-amber-200 text-center min-w-[200px]">
+            <div className="rounded-lg border border-amber-400 bg-amber-100 dark:border-amber-700/40 dark:bg-amber-950/30 px-4 py-2 text-sm text-amber-800 dark:text-amber-200 text-center min-w-[200px]">
               <div className="font-semibold">Oracle 19c/21c + EJB + Struts</div>
-              <div className="text-[10px] text-amber-500 font-mono-tech mt-0.5">
+              <div className="text-[10px] text-amber-600 dark:text-amber-500 font-mono-tech mt-0.5">
                 tudo acoplado · sem separação de camadas
               </div>
             </div>
           </div>
 
           {/* Warning callout */}
-          <div className="mt-1 rounded-lg bg-red-950/30 border border-red-900/40 px-3 py-2 text-xs text-red-300/80">
+          <div className="mt-1 rounded-lg bg-red-100 border border-red-300 dark:bg-red-950/30 dark:border-red-900/40 px-3 py-2 text-xs text-red-700 dark:text-red-300/80">
             <span className="font-mono-tech">CVE-2022-46364</span> SSRF/RCE em produção.
             Sem separação de responsabilidades. BillingServiceBean com 4.700+ linhas.
           </div>
@@ -105,24 +105,24 @@ function ArchDiagram() {
           DEPOIS — Dual endpoint isolado
         </p>
 
-        <div className="rounded-xl border border-blue-800/30 bg-blue-950/10 p-5 flex flex-col gap-4">
+        <div className="rounded-xl border border-blue-300 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-950/10 p-5 flex flex-col gap-4">
           {/* Two ingress paths */}
           <div className="grid grid-cols-2 gap-3">
             {/* SOAP Adapter */}
-            <div className="rounded-lg border border-amber-700/40 bg-amber-950/25 px-3 py-2.5 text-center">
-              <div className="text-xs font-mono-tech text-amber-400 mb-1">SOAP Adapter</div>
-              <div className="text-[11px] text-amber-200/80 font-semibold">CoreWCF 1.x</div>
-              <div className="text-[10px] text-amber-500/70 font-mono-tech mt-0.5">.NET 9 · :8081</div>
+            <div className="rounded-lg border border-amber-400 bg-amber-100 dark:border-amber-700/40 dark:bg-amber-950/25 px-3 py-2.5 text-center">
+              <div className="text-xs font-mono-tech text-amber-600 dark:text-amber-400 mb-1">SOAP Adapter</div>
+              <div className="text-[11px] text-amber-700 dark:text-amber-200/80 font-semibold">CoreWCF 1.x</div>
+              <div className="text-[10px] text-amber-600 dark:text-amber-500/70 font-mono-tech mt-0.5">.NET 9 · :8081</div>
               <div className="mt-1.5 flex justify-center">
                 <Tag variant="amber">Sunset +12m</Tag>
               </div>
             </div>
 
             {/* REST API */}
-            <div className="rounded-lg border border-blue-600/40 bg-blue-950/30 px-3 py-2.5 text-center">
-              <div className="text-xs font-mono-tech text-blue-400 mb-1">REST API</div>
-              <div className="text-[11px] text-blue-200/80 font-semibold">ASP.NET Core 9</div>
-              <div className="text-[10px] text-blue-400/70 font-mono-tech mt-0.5">JWT RS256 · :8080</div>
+            <div className="rounded-lg border border-blue-400 bg-blue-100 dark:border-blue-600/40 dark:bg-blue-950/30 px-3 py-2.5 text-center">
+              <div className="text-xs font-mono-tech text-blue-600 dark:text-blue-400 mb-1">REST API</div>
+              <div className="text-[11px] text-blue-700 dark:text-blue-200/80 font-semibold">ASP.NET Core 9</div>
+              <div className="text-[10px] text-blue-600 dark:text-blue-400/70 font-mono-tech mt-0.5">JWT RS256 · :8080</div>
               <div className="mt-1.5 flex justify-center">
                 <Tag variant="blue">Novos parceiros</Tag>
               </div>
@@ -142,9 +142,9 @@ function ArchDiagram() {
           </div>
 
           {/* Shared Application Layer */}
-          <div className="rounded-lg border border-green-700/40 bg-green-950/25 px-4 py-3 text-center">
-            <div className="text-sm font-semibold text-green-200">Application Layer</div>
-            <div className="text-[10px] text-green-400/80 font-mono-tech mt-0.5">MediatR · Commands · Handlers · Validators</div>
+          <div className="rounded-lg border border-green-400 bg-green-100 dark:border-green-700/40 dark:bg-green-950/25 px-4 py-3 text-center">
+            <div className="text-sm font-semibold text-green-700 dark:text-green-200">Application Layer</div>
+            <div className="text-[10px] text-green-600 dark:text-green-400/80 font-mono-tech mt-0.5">MediatR · Commands · Handlers · Validators</div>
             <div className="flex justify-center mt-2">
               <Tag variant="fix">Shared Application Layer</Tag>
             </div>
@@ -160,14 +160,14 @@ function ArchDiagram() {
 
           {/* Azure SQL */}
           <div className="flex items-center justify-center">
-            <div className="rounded-lg border border-slate-600/40 bg-slate-900/50 px-4 py-2 text-sm text-slate-200 text-center min-w-[160px]">
+            <div className="rounded-lg border border-slate-400 bg-slate-100 dark:border-slate-600/40 dark:bg-slate-900/50 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 text-center min-w-[160px]">
               <div className="font-semibold">Azure SQL</div>
-              <div className="text-[10px] text-slate-400 font-mono-tech mt-0.5">EF Core 9 · migrations versionadas</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono-tech mt-0.5">EF Core 9 · migrations versionadas</div>
             </div>
           </div>
 
           {/* Success callout */}
-          <div className="mt-1 rounded-lg bg-green-950/30 border border-green-900/40 px-3 py-2 text-xs text-green-300/80">
+          <div className="mt-1 rounded-lg bg-green-100 border border-green-300 dark:bg-green-950/30 dark:border-green-900/40 px-3 py-2 text-xs text-green-700 dark:text-green-300/80">
             Lógica de negócio compartilhada entre SOAP e REST. Zero duplicação.
             Domain e Application Layer agnósticos ao protocolo.
           </div>
