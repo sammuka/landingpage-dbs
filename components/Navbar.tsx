@@ -56,8 +56,8 @@ export function Navbar() {
             alt="Sistran"
             width={100}
             height={28}
-            className={`h-7 w-auto object-contain transition-all duration-200 ${!isDark ? "brightness-50 saturate-150" : ""}`}
-            style={!isDark ? { filter: "brightness(0.45) saturate(1.6)" } : {}}
+            className="h-7 w-auto object-contain transition-all duration-200"
+            style={isDark ? { filter: "brightness(0) invert(1)" } : { filter: "brightness(0.45) saturate(1.6)" }}
             unoptimized
           />
           <span className="text-muted-foreground/40 text-sm">×</span>
