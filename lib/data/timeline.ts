@@ -42,7 +42,7 @@ export const timelinePhases: TimelinePhase[] = [
     colorDark: "#fcd34d",
     details: [
       "Caminho A: Java 25 LTS + Spring Boot 3 + Angular 18 (on-premises)",
-      "Caminho B: .NET 9 + Azure Container Apps (cloud-native)",
+      "Caminho B: .NET 10 LTS + Azure Container Apps (cloud-native)",
       "Comparação TCO, time-to-market, risco técnico",
       "Apresentação ao Assurant Brasil para decisão",
     ],
@@ -56,19 +56,19 @@ export const timelinePhases: TimelinePhase[] = [
   {
     id: "adrs",
     number: "03",
-    title: "ADRs — 21 Decisões",
+    title: "ADRs — 22 Decisões",
     period: "02 – 04 Abr 2026",
     color: "#0078d4",
     colorDark: "#60a5fa",
     details: [
-      "ADR-001: .NET 9 + Next.js 16.1.6 como stack principal",
+      "ADR-001: .NET 10 LTS + Next.js 16.1.6 como stack principal",
       "ADR-009: Okta OAuth2/OIDC + JWT RS256",
       "ADR-015: Azure Container Apps (não AKS)",
       "ADR-019: SOAP Adapter isolado (Strangler Fig)",
       "ADR-021: Security Hardening — remediação de gaps pré-produção",
     ],
     deliverables: [
-      "21 ADRs versionados em docs/adr/",
+      "22 ADRs versionados em docs/adr/",
       "Arquitetura aprovada",
       "Estrutura Clean Architecture definida",
     ],
@@ -82,12 +82,12 @@ export const timelinePhases: TimelinePhase[] = [
     color: "#107c10",
     colorDark: "#4ade80",
     details: [
-      "Clean Architecture em 5 camadas com 163 testes",
+      "Clean Architecture em 5 camadas com 197 testes",
       "3 containers Azure (API Unificada, Portal, SOAP Adapter)",
       "6 módulos Bicep IaC + 3 pipelines GitHub Actions",
     ],
     deliverables: [
-      "Microsserviço .NET 9 completo",
+      "Microsserviço .NET 10 LTS completo",
       "Portal Next.js 16.1.6",
       "Infraestrutura Bicep",
       "Documentação técnica completa",
@@ -103,7 +103,7 @@ export const timelinePhases: TimelinePhase[] = [
     colorDark: "#67e8f9",
     details: [
       "906 classes Java → 383 tipos C# (Clean Architecture)",
-      "0 testes → 163 testes automatizados",
+      "0 testes → 197 testes automatizados",
       "9 CVEs críticos → 0 vulnerabilidades críticas",
       "Deploy de 4–6h com downtime → < 5 minutos zero downtime",
     ],

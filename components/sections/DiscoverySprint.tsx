@@ -216,10 +216,10 @@ function DayRow({ day, index, isInView }: { day: SprintDay; index: number; isInV
 
 const SUMMARY = [
   { label: "Docs AS-IS construídos", value: "16",   color: "#7c3aed" },
-  { label: "ADRs criados",           value: "21",   color: "#0078d4" },
+  { label: "ADRs criados",           value: "22",   color: "#0078d4" },
   { label: "Dívidas mapeadas",       value: "42",   color: "#dc2626" },
   { label: "Gaps identificados",     value: "53",   color: "#d97706" },
-  { label: "Testes (100%)",          value: "163",  color: "#107c10" },
+  { label: "Testes (100%)",          value: "197",  color: "#107c10" },
   { label: "Tasks executadas",       value: "215",  color: "#0891b2" },
 ] as const;
 
@@ -358,10 +358,10 @@ function ForkCallout({ isInView }: { isInView: boolean }) {
             </span>
           </div>
           <p className="font-display font-semibold text-sm text-foreground mb-1">
-            .NET 9 + Azure Container Apps + Okta
+            .NET 10 LTS + Azure Container Apps + Okta
           </p>
           <p className="text-[11px] text-muted-foreground leading-snug mb-2">
-            Cloud-native · Clean Architecture · 21 ADRs · PCI DSS
+            Cloud-native · Clean Architecture · 22 ADRs · PCI DSS
           </p>
           <ul className="space-y-1.5">
             {[
@@ -370,7 +370,7 @@ function ForkCallout({ isInView }: { isInView: boolean }) {
               "Managed Identity — sem secrets em código",
               "Okta MFA + App-to-App (ADR-009)",
               "Cielo.js — PAN/CVV nunca chegam ao backend",
-              "163 testes, >80% cobertura",
+              "197 testes, >80% cobertura",
             ].map((t) => (
               <li key={t} className="flex items-start gap-1.5">
                 <span className="shrink-0 mt-[3px] text-[11px]" style={{ color: "#107c10" }}>✓</span>

@@ -25,9 +25,9 @@ const metrics: Metric[] = [
   {
     label: "Testes Automatizados",
     from: 0,
-    to: 163,
+    to: 197,
     suffix: "",
-    description: "De zero para 163 testes",
+    description: "De zero para 197 testes",
   },
   {
     label: "CVEs Críticos",
@@ -60,7 +60,7 @@ const metrics: Metric[] = [
   {
     label: "ADRs Documentados",
     from: 0,
-    to: 21,
+    to: 22,
     suffix: "",
     description: "Decisões arquiteturais versionadas",
   },

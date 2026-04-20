@@ -104,8 +104,8 @@ export function ADRCards() {
         {/* Header */}
         <SectionLabel>Decisões Arquiteturais</SectionLabel>
         <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-10">
-          21 ADRs versionados —{" "}
-          <span className="text-[var(--color-azure-blue-l)]">8 decisões</span> mais impactantes
+          22 ADRs versionados —{" "}
+          <span className="text-[var(--color-azure-blue-l)]">9 decisões</span> mais impactantes
         </h2>
 
         {/* Grid */}

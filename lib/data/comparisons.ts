@@ -27,14 +27,14 @@ export const stackRows: StackRow[] = [
   {
     category: "Linguagem",
     legacy: "Java 8u271",
-    modern: ".NET 9 / C# 13",
+    modern: ".NET 10 LTS / C# 14",
     highlight: true,
     legacyStatus: "warning",
   },
   {
     category: "Runtime",
     legacy: "JVM (HotSpot 8)",
-    modern: ".NET 9 CLR",
+    modern: ".NET 10 LTS CLR",
     legacyStatus: "warning",
   },
   {
@@ -46,7 +46,7 @@ export const stackRows: StackRow[] = [
   {
     category: "Framework Web",
     legacy: "Struts 1.3 (EOL 2013)",
-    modern: "ASP.NET Core 9",
+    modern: "ASP.NET Core 10",
     highlight: true,
     legacyStatus: "eol",
   },
@@ -60,7 +60,7 @@ export const stackRows: StackRow[] = [
   {
     category: "ORM / Data",
     legacy: "JDBC direto + Stored Procs",
-    modern: "EF Core 9 (Code First)",
+    modern: "EF Core 10 (Code First)",
     legacyStatus: "warning",
   },
   {
@@ -141,7 +141,7 @@ export const stackRows: StackRow[] = [
   {
     category: "Testes",
     legacy: "0 testes automatizados",
-    modern: "163 testes automatizados",
+    modern: "197 testes automatizados",
     highlight: true,
     legacyStatus: "eol",
   },
@@ -181,7 +181,7 @@ export const securityRows: SecurityRow[] = [
     id: "sec-04",
     vulnerability: "SQL Injection por concatenação",
     legacyDetail: "QueryBuilder.java:156 — \"SELECT * FROM \" + tableName",
-    fix: "EF Core 9 LINQ parametrizado",
+    fix: "EF Core 10 LINQ parametrizado",
     fixDetail: "Todas as queries parametrizadas por padrão pelo ORM.",
   },
   {

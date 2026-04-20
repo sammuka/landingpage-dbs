@@ -12,6 +12,7 @@ const navLinks = [
   { href: "#endpoints", label: "Endpoints" },
   { href: "#stack", label: "Stack" },
   { href: "#security", label: "Segurança" },
+  { href: "#infrastructure", label: "Infra" },
   { href: "#devops", label: "DevOps" },
   { href: "#adrs", label: "ADRs" },
 ];

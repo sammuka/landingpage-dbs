@@ -45,7 +45,7 @@ export const azureContainers: AzureContainer[] = [
   {
     id: "dbs-api",
     name: "API Unificada",
-    tech: ".NET 9 / ASP.NET Core",
+    tech: ".NET 10 LTS / ASP.NET Core",
     port: 8080,
     cpu: "0.5",
     memory: "1Gi",
@@ -85,7 +85,7 @@ export const azureContainers: AzureContainer[] = [
   {
     id: "soap-adapter",
     name: "SOAP Adapter",
-    tech: "CoreWCF / .NET 9",
+    tech: "CoreWCF / .NET 10 LTS",
     port: 8081,
     cpu: "0.25",
     memory: "512Mi",
@@ -123,7 +123,7 @@ export const azureServices: AzureService[] = [
     description: "Banco relacional gerenciado",
     details: [
       "Substituição do Oracle 19c/21c on-premises",
-      "EF Core 9 com UseAzureSql()",
+      "EF Core 10 com UseAzureSql()",
       "EnableRetryOnFailure() para resiliência",
       "Backup geo-redundante automático",
     ],
@@ -195,18 +195,18 @@ export const azureServices: AzureService[] = [
   },
 ];
 
-// ─── 8 ADRs Chave ─────────────────────────────────────────────────
+// ─── 9 ADRs Chave ─────────────────────────────────────────────────
 export const keyADRs: ADR[] = [
   {
     id: "adr-001",
     number: "ADR-001",
-    title: "Stack Principal: .NET 9 + Next.js 16.1.6",
+    title: "Stack Principal: .NET 10 LTS + Next.js 16.1.6",
     context: "Necessidade de substituir Java 8 / JBoss / Struts com suporte ativo, ecossistema cloud-native e maturidade enterprise.",
-    decision: "Adotar .NET 9 (STS, suporte até Nov 2026) para backend e Next.js 16.1.6 para frontend.",
+    decision: "Adotar .NET 10 LTS (suporte até Nov 2028) para backend e Next.js 16.1.6 para frontend.",
     rationale: "Microsoft mantém integração nativa .NET ↔ Azure. Next.js oferece SSR, App Router, Server Components e deploy trivial no Vercel/Azure.",
     consequences: {
       positive: [
-        "Suporte STS até Nov 2026",
+        "Suporte LTS até Nov 2028",
         "Integração nativa com Azure SDK",
         "Ecosystem de packages com segurança ativa",
       ],
@@ -223,7 +223,7 @@ export const keyADRs: ADR[] = [
     rationale: "Dependências sempre apontam para dentro. Domain e Application sem dependências de framework. Testabilidade isolada por camada.",
     consequences: {
       positive: [
-        "163 testes unitários e de integração",
+        "197 testes unitários e de integração",
         "Troca de banco/gateway sem tocar Domain",
         "Onboarding mais rápido",
       ],
@@ -334,21 +334,38 @@ export const keyADRs: ADR[] = [
     },
     icon: "plug",
   },
+  {
+    id: "adr-022",
+    number: "ADR-022",
+    title: "Migração para .NET 10 LTS",
+    context: "O .NET 9 é uma versão STS (Standard Term Support) com suporte até novembro de 2026. Para garantir estabilidade em produção e alinhamento com o ciclo LTS da Microsoft, a migração para .NET 10 LTS é necessária antes do go-live.",
+    decision: "Migrar toda a solução de .NET 9 STS para .NET 10 LTS, com suporte até Nov 2028, normalização de dependências entre projetos e zero impacto na lógica de negócio.",
+    rationale: ".NET 10 LTS oferece 3 anos de suporte (até Nov 2028), alinhando o ciclo de vida do runtime com o horizonte de operação do sistema. A migração é de baixo risco pois não altera APIs públicas nem lógica de domínio.",
+    consequences: {
+      positive: [
+        "Suporte LTS até Nov 2028 — estabilidade em produção",
+        "C# 14 com melhorias de performance e linguagem",
+        "Dependências normalizadas entre todos os projetos",
+      ],
+      negative: ["Requer revalidação de todos os 197 testes após upgrade"],
+    },
+    icon: "layers",
+  },
 ];
 
 // ─── Métricas TO-BE ───────────────────────────────────────────────
 export const cloudMetrics = {
   totalClasses: 383,
-  testCount: 163,
+  testCount: 197,
   criticalCVEs: 0,
   technicalDebts: 0,
   soapDTOs: 36,
   containers: 3,
-  adrs: 21,
+  adrs: 22,
   cleanArchLayers: 5,
   quartzJobs: 10,
   bicepModules: 6,
   deployTime: "< 5 minutos (zero downtime)",
-  dotnetVersion: ".NET 9 (STS)",
+  dotnetVersion: ".NET 10 LTS",
   azureRegion: "Brazil South (São Paulo)",
 };

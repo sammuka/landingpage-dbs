@@ -140,7 +140,7 @@ export function Footer() {
             Dados extraídos da documentação técnica oficial do projeto DBS. © 2026 Sistran × Lumina AI.
           </p>
           <p className="font-mono-tech text-[10px] text-muted-foreground/50 text-center sm:text-right whitespace-nowrap">
-            Powered by Next.js 16.1.6 · Azure Container Apps · .NET 9
+            Powered by Next.js 16.1.6 · Azure Container Apps · .NET 10 LTS
           </p>
         </div>
       </div>

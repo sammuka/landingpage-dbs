@@ -43,7 +43,7 @@ export const BADGE_AI: SprintBadge    = { label: "IA assistida", color: "#7c3aed
 export const BADGE_OKTA: SprintBadge  = { label: "Okta",         color: "#00297a" };
 export const BADGE_PCI: SprintBadge   = { label: "PCI DSS",      color: "#dc2626" };
 export const BADGE_AZURE: SprintBadge = { label: "Azure",        color: "#0078d4" };
-export const BADGE_DOTNET: SprintBadge = { label: ".NET 9",      color: "#512bd4" };
+export const BADGE_DOTNET: SprintBadge = { label: ".NET 10 LTS",  color: "#512bd4" };
 export const BADGE_ENG: SprintBadge   = { label: "Eng. Reversa", color: "#d97706" };
 
 // ─── Sprint days ─────────────────────────────────────────────────────────────
@@ -159,13 +159,13 @@ export const sprintDays: SprintDay[] = [
       },
       {
         id: "ev-path-b",
-        title: "Caminho B projetado: .NET 9 + Azure Container Apps + Okta",
+        title: "Caminho B projetado: .NET 10 LTS + Azure Container Apps + Okta",
         description:
-          "A equipe projetou o caminho cloud-native: ASP.NET Core 9, Clean Architecture em 5 camadas, Azure Container Apps, Azure SQL, Okta OAuth2/OIDC. 21 ADRs esboçados cobrindo stack, tokenização, dual-recorrência, dual-idempotência, segurança PCI DSS, jobs Quartz, SOAP Adapter.",
+          "A equipe projetou o caminho cloud-native: ASP.NET Core 10, Clean Architecture em 5 camadas, Azure Container Apps, Azure SQL, Okta OAuth2/OIDC. 22 ADRs esboçados cobrindo stack, tokenização, dual-recorrência, dual-idempotência, segurança PCI DSS, jobs Quartz, SOAP Adapter.",
         category: "docbuild",
         badges: [BADGE_DOTNET, BADGE_AZURE, BADGE_AI],
         path: "B",
-        metrics: [".NET 9", "Azure Container Apps", "21 ADRs esboçados", "Clean Architecture 5 camadas"],
+        metrics: [".NET 10 LTS", "Azure Container Apps", "22 ADRs esboçados", "Clean Architecture 5 camadas"],
       },
     ],
   },
@@ -202,12 +202,12 @@ export const sprintDays: SprintDay[] = [
       },
       {
         id: "ev-tests",
-        title: "163 testes — 100% passando",
+        title: "197 testes — 100% passando",
         description:
-          "163 testes automatizados (xUnit + FluentAssertions + NSubstitute + Testcontainers/Azure SQL Edge). Cobertura Domain + Application > 80%. Comparado ao legado: 906 classes Java com 0 testes.",
+          "197 testes automatizados (xUnit + FluentAssertions + NSubstitute + Testcontainers/Azure SQL Edge). Cobertura Domain + Application > 80%. Comparado ao legado: 906 classes Java com 0 testes.",
         category: "validation",
         badges: [],
-        metrics: ["163 testes", "100% passando", ">80% cobertura", "vs. 0 testes no legado"],
+        metrics: ["197 testes", "100% passando", ">80% cobertura", "vs. 0 testes no legado"],
       },
     ],
   },
@@ -258,7 +258,7 @@ export const sprintDays: SprintDay[] = [
         id: "ev-docker",
         title: "Docker multi-stage + docker-compose",
         description:
-          "4 serviços containerizados: dbs-api (:5000), dbs-portal (:3000), dbs-soap-adapter (:8081), sqlserver (:1433). .NET 9 multi-stage build. Ambiente local reprodutível com um único `docker compose up -d`.",
+          "4 serviços containerizados: dbs-api (:5000), dbs-portal (:3000), dbs-soap-adapter (:8081), sqlserver (:1433). .NET 10 LTS multi-stage build. Ambiente local reprodutível com um único `docker compose up -d`.",
         category: "infra",
         badges: [BADGE_AZURE],
         metrics: ["4 containers", "docker compose up -d", "ambiente reprodutível"],
@@ -291,19 +291,19 @@ export const sprintDays: SprintDay[] = [
         id: "ev-local-tests",
         title: "Testes locais completos",
         description:
-          "163 testes passando no ambiente Docker local. 4 coleções Postman validadas: DBS-API, DBS-SOAP-Adapter, DBS-Admin-Full, DBS-Mass-Test. Endpoints Payment + Admin cobertos. SOAP Adapter validado contra o WSDL original.",
+          "197 testes passando no ambiente Docker local. 4 coleções Postman validadas: DBS-API, DBS-SOAP-Adapter, DBS-Admin-Full, DBS-Mass-Test. Endpoints Payment + Admin cobertos. SOAP Adapter validado contra o WSDL original.",
         category: "validation",
         badges: [],
-        metrics: ["163 testes", "4 coleções Postman", "SOAP + REST validados"],
+        metrics: ["197 testes", "4 coleções Postman", "SOAP + REST validados"],
       },
       {
         id: "ev-ready",
         title: "10 dias: de zero documentação a sistema cloud-native",
         description:
-          "Engenharia reversa completa, 16 docs AS-IS construídos, dois caminhos TO-BE projetados, decisão tomada, sistema implementado. De 9 CVEs críticos e 0 testes a 163 testes, Clean Architecture, Okta, PCI DSS e IaC Bicep. Próximo: deploy Azure Container Apps.",
+          "Engenharia reversa completa, 16 docs AS-IS construídos, dois caminhos TO-BE projetados, decisão tomada, sistema implementado. De 9 CVEs críticos e 0 testes a 197 testes, Clean Architecture, Okta, PCI DSS e IaC Bicep. Próximo: deploy Azure Container Apps.",
         category: "impl",
         badges: [BADGE_DOTNET, BADGE_AZURE, BADGE_OKTA],
-        metrics: ["383 tipos C# (vs. 906 classes Java)", "0 CVEs críticos", "163 testes", "IaC Bicep pronto"],
+        metrics: ["383 tipos C# (vs. 906 classes Java)", "0 CVEs críticos", "197 testes", "IaC Bicep pronto"],
       },
     ],
   },
@@ -330,9 +330,9 @@ export const sprintSummary: SprintSummary = {
   startDate: "31/03/2026",
   endDate: "10/04/2026",
   asIsDocsBuilt: 16,
-  adrsCreated: 21,
+  adrsCreated: 22,
   csharpFiles: 250,
-  tests: 163,
+  tests: 197,
   tasksExecuted: 215,
   pathsDesigned: 2,
   technicalDebts: 42,

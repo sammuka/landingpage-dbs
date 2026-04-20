@@ -112,7 +112,7 @@ function ArchDiagram() {
             <div className="rounded-lg border border-amber-400 bg-amber-100 dark:border-amber-700/40 dark:bg-amber-950/25 px-3 py-2.5 text-center">
               <div className="text-xs font-mono-tech text-amber-600 dark:text-amber-400 mb-1">SOAP Adapter</div>
               <div className="text-[11px] text-amber-700 dark:text-amber-200/80 font-semibold">CoreWCF 1.x</div>
-              <div className="text-[10px] text-amber-600 dark:text-amber-500/70 font-mono-tech mt-0.5">.NET 9 · :8081</div>
+              <div className="text-[10px] text-amber-600 dark:text-amber-500/70 font-mono-tech mt-0.5">.NET 10 LTS · :8081</div>
               <div className="mt-1.5 flex justify-center">
                 <Tag variant="amber">Sunset +12m</Tag>
               </div>
@@ -121,7 +121,7 @@ function ArchDiagram() {
             {/* REST API */}
             <div className="rounded-lg border border-blue-400 bg-blue-100 dark:border-blue-600/40 dark:bg-blue-950/30 px-3 py-2.5 text-center">
               <div className="text-xs font-mono-tech text-blue-600 dark:text-blue-400 mb-1">REST API</div>
-              <div className="text-[11px] text-blue-700 dark:text-blue-200/80 font-semibold">ASP.NET Core 9</div>
+              <div className="text-[11px] text-blue-700 dark:text-blue-200/80 font-semibold">ASP.NET Core 10</div>
               <div className="text-[10px] text-blue-600 dark:text-blue-400/70 font-mono-tech mt-0.5">JWT RS256 · :8080</div>
               <div className="mt-1.5 flex justify-center">
                 <Tag variant="blue">Novos parceiros</Tag>
@@ -162,7 +162,7 @@ function ArchDiagram() {
           <div className="flex items-center justify-center">
             <div className="rounded-lg border border-slate-400 bg-slate-100 dark:border-slate-600/40 dark:bg-slate-900/50 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 text-center min-w-[160px]">
               <div className="font-semibold">Azure SQL</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono-tech mt-0.5">EF Core 9 · migrations versionadas</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono-tech mt-0.5">EF Core 10 · migrations versionadas</div>
             </div>
           </div>
 

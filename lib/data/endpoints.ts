@@ -89,7 +89,7 @@ export const sunsetStrategy = {
 export const dualEndpointStrategy = {
   soapAdapter: {
     container: "soap-adapter",
-    technology: "CoreWCF 1.x / .NET 9",
+    technology: "CoreWCF 1.x / .NET 10 LTS",
     exposure: "Interno (não exposto diretamente pela internet)",
     authentication: "WS-Security (compatibilidade legada)",
     purpose: "Recebe chamadas SOAP de parceiros legados, traduz para MediatR commands",
@@ -97,7 +97,7 @@ export const dualEndpointStrategy = {
   },
   restApi: {
     container: "dbs-api",
-    technology: "ASP.NET Core 9 / Minimal APIs + Controllers",
+    technology: "ASP.NET Core 10 / Minimal APIs + Controllers",
     exposure: "HTTPS público via Azure Container Apps ingress",
     authentication: "JWT RS256 (Okta) + X-Idempotency-Key header",
     purpose: "API principal para novos parceiros e integrações modernas",

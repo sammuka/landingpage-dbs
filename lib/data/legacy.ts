@@ -182,7 +182,7 @@ export const securityVulnerabilities: SecurityVulnerability[] = [
     severity: "critical",
     file: "dbsdb/src/QueryBuilder.java:156",
     description: "Múltiplas queries construídas por concatenação de strings sem parametrização. Entrada do usuário direta na query.",
-    fix: "EF Core 9 com LINQ — toda query é parametrizada por padrão. Sem SQL raw dinâmico.",
+    fix: "EF Core 10 com LINQ — toda query é parametrizada por padrão. Sem SQL raw dinâmico.",
   },
   {
     id: "vuln-07",

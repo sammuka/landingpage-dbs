@@ -9,6 +9,7 @@ import { StackComparison } from "@/components/sections/StackComparison";
 import { SecurityVulnerabilities } from "@/components/sections/SecurityVulnerabilities";
 import { IntegrationModel } from "@/components/sections/IntegrationModel";
 import { MetricsAnimated } from "@/components/sections/MetricsAnimated";
+import { AzureInfrastructure } from "@/components/sections/AzureInfrastructure";
 import { DevOpsPipeline } from "@/components/sections/DevOpsPipeline";
 import { ADRCards } from "@/components/sections/ADRCards";
 import { Footer } from "@/components/sections/Footer";
@@ -43,6 +44,8 @@ export default function Home() {
         <IntegrationModel />
         <div className="section-divider" />
         <MetricsAnimated />
+        <div className="section-divider" />
+        <AzureInfrastructure />
         <div className="section-divider" />
         <DevOpsPipeline />
         <div className="section-divider" />

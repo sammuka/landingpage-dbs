@@ -43,3 +43,8 @@ next-env.d.ts
 # tooling / dev artifacts
 .playwright-mcp/
 .superpowers/
+.claude/
+
+# docs de planejamento interno
+docs/prompt_atualizacao.md
+docs/superpowers/

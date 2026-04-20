@@ -51,7 +51,7 @@ const metrics: MetricCard[] = [
   {
     fromLabel: "0 testes no legado",
     from: 0,
-    to: 163,
+    to: 197,
     suffix: " testes",
     description: "testes automatizados",
     accentColor: "var(--metric-blue)",

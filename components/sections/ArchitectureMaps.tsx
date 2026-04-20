@@ -82,7 +82,7 @@ const legacyStats: LegendStat[] = [
 
 const cloudStats: LegendStat[] = [
   { value: "3", label: "containers", variant: "ok" },
-  { value: "163", label: "testes", variant: "ok" },
+  { value: "197", label: "testes", variant: "ok" },
   { value: "0", label: "CVEs", variant: "ok" },
   { value: "6", label: "módulos Bicep", variant: "neutral" },
 ];
